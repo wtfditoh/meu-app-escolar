@@ -1,9 +1,34 @@
+// 1. FUNÇÃO DE MUDAR ABA (Garante que os botões funcionem)
+function mudarAba(aba) {
+    // Seleciona todas as seções e botões
+    const abas = document.querySelectorAll('.tab-content');
+    const botoes = document.querySelectorAll('.nav-item');
+
+    // Esconde tudo
+    abas.forEach(a => a.classList.remove('active'));
+    botoes.forEach(b => b.classList.remove('active'));
+
+    // Mostra só o que foi clicado
+    const abaAtiva = document.getElementById('aba-' + aba);
+    const botaoAtivo = document.getElementById('nav-' + aba);
+    
+    if (abaAtiva && botaoAtivo) {
+        abaAtiva.classList.add('active');
+        botaoAtivo.classList.add('active');
+    }
+}
+
+// 2. INICIALIZAÇÃO
 document.addEventListener('DOMContentLoaded', () => {
-    lucide.createIcons();
+    if (typeof lucide !== 'undefined') lucide.createIcons();
     renderizarMaterias();
 });
 
 let materias = JSON.parse(localStorage.getItem('dt_materias')) || [];
+
+function salvar() {
+    localStorage.setItem('dt_materias', JSON.stringify(materias));
+}
 
 function adicionarMateria() {
     const nome = prompt("Nome da Disciplina:");
@@ -14,7 +39,7 @@ function adicionarMateria() {
 }
 
 function removerMateria(id) {
-    if(confirm("Excluir matéria?")) {
+    if(confirm("Deseja excluir esta matéria?")) {
         materias = materias.filter(m => m.id !== id);
         salvar();
         renderizarMaterias();
@@ -23,13 +48,16 @@ function removerMateria(id) {
 
 function atualizarNota(id, index, valor) {
     const mat = materias.find(m => m.id === id);
-    mat.notas[index] = parseFloat(valor) || 0;
-    salvar();
-    atualizarStats(); // Atualiza os números no topo sem recarregar tudo
+    if (mat) {
+        mat.notas[index] = parseFloat(valor) || 0;
+        salvar();
+        atualizarStats();
+    }
 }
 
 function renderizarMaterias() {
     const container = document.getElementById('lista-materias');
+    if (!container) return;
     container.innerHTML = '';
 
     materias.forEach(m => {
@@ -60,39 +88,19 @@ function renderizarMaterias() {
             </div>
         `;
     });
-    lucide.createIcons();
+    if (typeof lucide !== 'undefined') lucide.createIcons();
     atualizarStats();
 }
 
 function atualizarStats() {
-    const totalMaterias = materias.length;
+    const total = materias.length;
     const aprovadas = materias.filter(m => m.notas.reduce((a, b) => a + b, 0) >= 24).length;
+    const somaGeral = materias.reduce((acc, m) => acc + m.notas.reduce((a, b) => a + b, 0), 0);
+    const mediaGeral = total ? (somaGeral / (total * 4)).toFixed(1) : "0.0";
+
+    const elMedia = document.getElementById('media-geral');
+    const elAprovadas = document.getElementById('materias-aprovadas');
     
-    // Média Geral
-    const somaNotas = materias.reduce((acc, m) => acc + m.notas.reduce((a, b) => a + b, 0), 0);
-    const media = totalMaterias ? (somaNotas / (totalMaterias * 4)).toFixed(1) : "0.0";
-
-    document.getElementById('media-geral').innerText = media;
-    // MOSTRA "2/5" POR EXEMPLO
-    document.getElementById('materias-aprovadas').innerText = `${aprovadas}/${totalMaterias}`;
-}
-
-function salvar() {
-    localStorage.setItem('dt_materias', JSON.stringify(materias));
-}
-
-function mudarAba(aba) {
-    // 1. Esconde todas as abas
-    document.querySelectorAll('.tab-content').forEach(content => {
-        content.classList.remove('active');
-    });
-
-    // 2. Tira o brilho de todos os botões da nav
-    document.querySelectorAll('.nav-item').forEach(nav => {
-        nav.classList.remove('active');
-    });
-
-    // 3. Mostra a aba clicada e acende o botão
-    document.getElementById(`aba-${aba}`).classList.add('active');
-    document.getElementById(`nav-${aba}`).classList.add('active');
+    if (elMedia) elMedia.innerText = mediaGeral;
+    if (elAprovadas) elAprovadas.innerText = `${aprovadas}/${total}`;
 }
