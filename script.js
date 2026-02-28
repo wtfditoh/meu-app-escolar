@@ -40,22 +40,41 @@ function renderizarMaterias() {
         container.innerHTML += `
             <div class="card-materia">
                 <div class="materia-info">
-                    <h3>${m.nome}</h3>
-                    <span class="status-badge ${isAprovado ? 'aprovado' : 'pendente'}">
-                        ${isAprovado ? 'APROVADO' : (24 - total).toFixed(1) + ' PTS FALTAM'}
-                    </span>
+                    <div>
+                        <h3>${m.nome}</h3>
+                        <span class="status-badge ${isAprovado ? 'aprovado' : 'pendente'}">
+                            ${isAprovado ? 'APROVADO' : (24 - total).toFixed(1) + ' PTS FALTAM'}
+                        </span>
+                    </div>
+                    <button onclick="removerMateria(${m.id})" class="btn-delete">
+                        <i data-lucide="trash-2"></i>
+                    </button>
                 </div>
                 <div class="notas-grid">
                     ${m.notas.map((n, i) => `
-                        <input type="number" value="${n}" step="0.5" 
-                        onchange="atualizarNota(${m.id}, ${i}, this.value)">
+                        <div class="input-group">
+                            <label>${i+1}ºB</label>
+                            <input type="number" value="${n}" step="0.5" 
+                            onchange="atualizarNota(${m.id}, ${i}, this.value)">
+                        </div>
                     `).join('')}
                 </div>
             </div>
         `;
     });
+    lucide.createIcons(); // Recarrega os ícones
     atualizarStats();
 }
+
+// Adicione esta função para excluir
+function removerMateria(id) {
+    if(confirm("Deseja excluir esta matéria?")) {
+        materias = materias.filter(m => m.id !== id);
+        salvar();
+        renderizarMaterias();
+    }
+}
+
 
 function atualizarStats() {
     const totalNotas = materias.reduce((acc, m) => acc + m.notas.reduce((a, b) => a + b, 0), 0);
