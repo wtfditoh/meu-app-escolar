@@ -1,110 +1,95 @@
-let materias = JSON.parse(localStorage.getItem('dt_materias')) || [];
-let idParaExcluir = null;
+let materias = JSON.parse(localStorage.getItem('materias')) || [];
+let graficoInstancia = null;
 
+// INICIALIZAÇÃO
 document.addEventListener('DOMContentLoaded', () => {
-    if (window.lucide) lucide.createIcons();
-    renderizarMaterias();
+    lucide.createIcons();
+    atualizarLista();
 });
 
-function mudarAba(aba) {
-    document.querySelectorAll('.tab-content').forEach(a => a.classList.remove('active'));
-    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-    document.getElementById('aba-' + aba).classList.add('active');
-    document.getElementById('nav-' + aba).classList.add('active');
+// MENU E NAVEGAÇÃO
+function toggleMenu() {
+    document.getElementById('menu-lateral').classList.toggle('open');
+    document.getElementById('overlay').classList.toggle('active');
 }
 
-// Lógica Adicionar
-function adicionarMateria() {
-    document.getElementById('modal-materia').style.display = 'flex';
-    document.getElementById('nome-materia-input').focus();
+function navegar(aba) {
+    document.querySelectorAll('.tab-content').forEach(content => content.style.display = 'none');
+    document.querySelectorAll('.nav-item-drawer').forEach(btn => btn.classList.remove('active'));
+    
+    document.getElementById('aba-' + aba).style.display = 'block';
+    document.getElementById('btn-nav-' + aba).classList.add('active');
+    
+    if(aba === 'desempenho') renderizarGrafico();
+    toggleMenu();
 }
 
-function fecharModal() {
-    document.getElementById('modal-materia').style.display = 'none';
-    document.getElementById('nome-materia-input').value = '';
+// LÓGICA DO GRÁFICO
+function renderizarGrafico() {
+    const ctx = document.getElementById('graficoDesempenho').getContext('2d');
+    if(graficoInstancia) graficoInstancia.destroy();
+
+    const labels = materias.length > 0 ? materias.map(m => m.nome) : ['Sem dados'];
+    const notas = materias.length > 0 ? materias.map(m => parseFloat(m.nota || 0)) : [0];
+
+    graficoInstancia = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Suas Notas',
+                data: notas,
+                borderColor: '#8a2be2',
+                backgroundColor: 'rgba(138, 43, 226, 0.1)',
+                fill: true,
+                tension: 0.4,
+                borderWidth: 3
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: { beginAtZero: true, max: 10, grid: { color: 'rgba(255,255,255,0.05)' } },
+                x: { grid: { display: false } }
+            }
+        }
+    });
 }
+
+// FUNÇÕES DE MATÉRIA (ADICIONAR/REMOVER) - Mantenha as que você já tem ou use essas simplificadas:
+function adicionarMateria() { document.getElementById('modal-materia').style.display = 'flex'; }
+function fecharModal() { document.getElementById('modal-materia').style.display = 'none'; }
 
 function confirmarNovaMateria() {
-    const nome = document.getElementById('nome-materia-input').value.trim();
-    if (nome) {
-        materias.push({ id: Date.now(), nome: nome, notas: [0, 0, 0, 0] });
-        salvarETualizar();
+    const nome = document.getElementById('nome-materia-input').value;
+    if(nome) {
+        materias.push({ id: Date.now(), nome: nome, nota: 0 });
+        localStorage.setItem('materias', JSON.stringify(materias));
+        atualizarLista();
         fecharModal();
+        document.getElementById('nome-materia-input').value = '';
     }
 }
 
-// Lógica Excluir
-function removerMateria(id) {
-    idParaExcluir = id;
-    document.getElementById('modal-excluir').style.display = 'flex';
-    document.getElementById('btn-confirmar-exclusao').onclick = () => {
-        materias = materias.filter(m => m.id !== idParaExcluir);
-        salvarETualizar();
-        fecharModalExcluir();
-    };
+function atualizarLista() {
+    const lista = document.getElementById('lista-materias');
+    lista.innerHTML = materias.map(m => `
+        <div class="stat-item" style="margin-bottom:10px; text-align:left; display:flex; justify-content:space-between; align-items:center;">
+            <span>${m.nome}</span>
+            <input type="number" value="${m.nota}" onchange="atualizarNota(${m.id}, this.value)" style="width:50px; background:none; border:1px solid #444; color:white; text-align:center; border-radius:5px;">
+        </div>
+    `).join('');
+    
+    // Cálculos de média geral aqui...
+    const media = materias.length ? (materias.reduce((a, b) => a + parseFloat(b.nota), 0) / materias.length).toFixed(1) : "0.0";
+    document.getElementById('media-geral').innerText = media;
+    document.getElementById('materias-aprovadas').innerText = `${materias.filter(m => m.nota >= 6).length}/${materias.length}`;
 }
 
-function fecharModalExcluir() {
-    document.getElementById('modal-excluir').style.display = 'none';
-    idParaExcluir = null;
-}
-
-function atualizarNota(id, index, valor) {
-    const mat = materias.find(m => m.id === id);
-    if (mat) {
-        mat.notas[index] = parseFloat(valor) || 0;
-        salvarETualizar();
-    }
-}
-
-function salvarETualizar() {
-    localStorage.setItem('dt_materias', JSON.stringify(materias));
-    renderizarMaterias();
-}
-
-function renderizarMaterias() {
-    const container = document.getElementById('lista-materias');
-    if (!container) return;
-    container.innerHTML = '';
-
-    materias.forEach(m => {
-        const total = m.notas.reduce((a, b) => a + b, 0);
-        const isAprovado = total >= 24;
-        
-        container.innerHTML += `
-            <div class="card-materia">
-                <div class="materia-info">
-                    <div>
-                        <h3>${m.nome}</h3>
-                        <span class="status-badge ${isAprovado ? 'aprovado' : 'pendente'}">
-                            ${isAprovado ? 'APROVADO' : (24 - total).toFixed(1) + ' FALTAM'}
-                        </span>
-                    </div>
-                    <button onclick="removerMateria(${m.id})" class="btn-delete">
-                        <i data-lucide="trash-2"></i>
-                    </button>
-                </div>
-                <div class="notas-grid">
-                    ${m.notas.map((n, i) => `
-                        <div class="input-group">
-                            <label>${i+1}º</label>
-                            <input type="number" step="0.1" value="${n}" onchange="atualizarNota(${m.id}, ${i}, this.value)">
-                        </div>
-                    `).join('')}
-                </div>
-            </div>
-        `;
-    });
-    if (window.lucide) lucide.createIcons();
-    atualizarStats();
-}
-
-function atualizarStats() {
-    const total = materias.length;
-    const aprovadas = materias.filter(m => m.notas.reduce((a, b) => a + b, 0) >= 24).length;
-    const somaGeral = materias.reduce((acc, m) => acc + m.notas.reduce((a, b) => a + b, 0), 0);
-    const mediaGeral = total ? (somaGeral / (total * 4)).toFixed(1) : "0.0";
-
-    document.getElementById('media-geral').innerText = mediaGeral;
-    document.getElementById('materias-aprovadas').innerText = `${aprovadas}/${total}`;
+function atualizarNota(id, valor) {
+    const index = materias.findIndex(m => m.id === id);
+    materias[index].nota = valor;
+    localStorage.setItem('materias', JSON.stringify(materias));
+    atualizarLista();
 }
