@@ -2,149 +2,131 @@
     --primary: #8a2be2;
     --accent: #7cfc00;
     --danger: #ff4d4d;
-    --card-bg: rgba(255, 255, 255, 0.05);
+    --card-bg: rgba(255, 255, 255, 0.06);
+    --border: rgba(255, 255, 255, 0.1);
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+* { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
 
 body {
-    /* O DEGRADÊ LINDO DE VOLTA */
     background: radial-gradient(circle at top right, #1a0b2e, #050505) no-repeat;
     background-attachment: fixed;
     color: #fff;
-    font-family: sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     padding: 20px;
     padding-bottom: 100px;
     min-height: 100vh;
 }
 
-/* LÓGICA DE ABAS */
-.tab-content { display: none; }
-.tab-content.active { display: block; animation: fadeIn 0.3s ease; }
+/* Header Alinhado */
+.glass-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
 
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.logo-area { display: flex; align-items: center; gap: 10px; }
+.logo-dot { width: 10px; height: 10px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 10px var(--accent); }
+h1 { font-size: 1.4rem; letter-spacing: -1px; }
 
-/* CARDS E CORES */
+.btn-add-main {
+    background: var(--primary);
+    color: white;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Stats */
 .stats-overview {
     background: var(--card-bg);
+    border: 1px solid var(--border);
     border-radius: 20px;
     display: flex;
-    justify-content: space-around;
     padding: 20px;
     margin-bottom: 20px;
-    border: 1px solid rgba(255,255,255,0.1);
 }
 
+.stat-item { flex: 1; text-align: center; }
+.stat-item span { display: block; font-size: 1.6rem; font-weight: 800; color: #a64dff; }
+.stat-item label { font-size: 0.7rem; opacity: 0.5; text-transform: uppercase; }
+
+/* Cards de Matéria */
 .card-materia {
     background: var(--card-bg);
-    border-radius: 15px;
-    padding: 15px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 16px;
     margin-bottom: 15px;
-    border-left: 4px solid var(--primary);
 }
 
-/* BOTÃO APROVADO VERDE */
-.status-badge.aprovado {
-    background: rgba(124, 252, 0, 0.2);
-    color: var(--accent);
-    border: 1px solid var(--accent);
+.materia-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.materia-info h3 { font-size: 1rem; margin-bottom: 4px; }
+
+.status-badge {
     padding: 4px 8px;
     border-radius: 6px;
     font-size: 0.7rem;
     font-weight: bold;
 }
+.status-badge.aprovado { background: rgba(124, 252, 0, 0.15); color: var(--accent); border: 1px solid var(--accent); }
+.status-badge.pendente { background: rgba(255, 255, 255, 0.05); color: #aaa; border: 1px solid #444; }
 
-/* BOTÃO PENDENTE CINZA */
-.status-badge.pendente {
-    background: rgba(255,255,255,0.1);
-    color: #ccc;
-    padding: 4px 8px;
-    border-radius: 6px;
-    font-size: 0.7rem;
+.btn-delete {
+    background: rgba(255, 77, 77, 0.15);
+    color: var(--danger);
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-/* INPUTS SEM VAZAR */
-.notas-grid { display: flex; gap: 8px; margin-top: 10px; }
+/* Grid de Notas (Sem vazar) */
+.notas-grid { display: flex; gap: 8px; }
 .input-group { flex: 1; display: flex; flex-direction: column; align-items: center; }
+.input-group label { font-size: 0.6rem; margin-bottom: 4px; color: #888; }
 .input-group input {
     width: 100%;
     background: rgba(0,0,0,0.3);
-    border: 1px solid #444;
+    border: 1px solid #333;
+    border-radius: 10px;
     color: #fff;
     text-align: center;
-    padding: 10px 0;
-    border-radius: 8px;
+    padding: 12px 0;
+    font-size: 0.9rem;
 }
 
-/* NAV BAIXO */
+/* Nav Inferior */
 .bottom-nav {
     position: fixed;
     bottom: 20px; left: 20px; right: 20px;
-    background: rgba(20, 20, 25, 0.9);
+    background: rgba(15, 15, 20, 0.95);
     backdrop-filter: blur(10px);
     height: 70px;
-    border-radius: 20px;
+    border-radius: 22px;
     display: flex;
     justify-content: space-around;
     align-items: center;
+    border: 1px solid var(--border);
 }
 
-.nav-item { background: none; border: none; color: #555; display: flex; flex-direction: column; align-items: center; font-size: 0.7rem; }
+.nav-item { background: none; border: none; color: #555; display: flex; flex-direction: column; align-items: center; gap: 4px; }
 .nav-item.active { color: var(--primary); }
 
-.btn-add-main { background: var(--primary); color: white; border: none; width: 40px; height: 40px; border-radius: 10px; }
-.btn-delete { background: rgba(255,0,0,0.2); color: var(--danger); border: none; padding: 5px; border-radius: 5px; }
-
-/* CORREÇÃO DO CABEÇALHO (Logo e Botão +) */
-header, .glass-header {
-    display: flex !important;
-    flex-direction: row !important; /* Força a ficar na horizontal */
-    justify-content: space-between !important;
-    align-items: center !important;
-    width: 100%;
-    margin-bottom: 25px;
-}
-
-/* CORREÇÃO DO CARD (Nome/Status e Lixeira) */
-.materia-info {
-    display: flex !important;
-    flex-direction: row !important; /* Força a ficar na horizontal */
-    justify-content: space-between !important;
-    align-items: center !important;
-    width: 100%;
-    margin-bottom: 15px;
-}
-
-/* Garante que o texto da matéria não empurre o botão */
-.materia-info div:first-child {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-}
-
-/* Estilo do botão de lixeira para ficar bonito ao lado */
-.btn-delete {
-    background: rgba(255, 77, 77, 0.15) !important;
-    color: #ff4d4d !important;
-    border: none;
-    padding: 8px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 35px;
-    height: 35px;
-}
-
-/* Estilo do botão + para ficar bonito no topo */
-.btn-add-main {
-    background: #8a2be2 !important;
-    color: white !important;
-    border: none;
-    width: 38px;
-    height: 38px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
+/* Abas */
+.tab-content { display: none; }
+.tab-content.active { display: block; }
