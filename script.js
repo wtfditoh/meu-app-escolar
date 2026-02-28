@@ -80,3 +80,19 @@ function atualizarStats() {
 function salvar() {
     localStorage.setItem('dt_materias', JSON.stringify(materias));
 }
+
+function mudarAba(aba) {
+    // 1. Esconde todas as abas
+    document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+    });
+
+    // 2. Tira o brilho de todos os botões da nav
+    document.querySelectorAll('.nav-item').forEach(nav => {
+        nav.classList.remove('active');
+    });
+
+    // 3. Mostra a aba clicada e acende o botão
+    document.getElementById(`aba-${aba}`).classList.add('active');
+    document.getElementById(`nav-${aba}`).classList.add('active');
+}
