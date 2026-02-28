@@ -1,130 +1,57 @@
-/* Cores Globais */
 :root {
-    --bg-color: #0d0d12;
-    --card-bg: rgba(30, 30, 40, 0.9);
+    --bg: #05050a;
     --primary: #8a2be2;
+    --card: rgba(255, 255, 255, 0.05);
+    --glass: rgba(255, 255, 255, 0.03);
     --text: #ffffff;
-    --border: rgba(255, 255, 255, 0.1);
-}
-
-* { 
-    margin: 0; 
-    padding: 0; 
-    box-sizing: border-box; 
-    font-family: sans-serif; 
 }
 
 body { 
-    background-color: var(--bg-color); 
-    color: var(--text); 
+    background: radial-gradient(circle at top right, #1a0b2e, #05050a);
+    color: var(--text);
     min-height: 100vh;
+    font-family: 'Segoe UI', sans-serif;
 }
 
-/* HEADER FIXO */
+/* HEADER */
 .glass-header {
-    display: flex; 
-    align-items: center; 
-    justify-content: space-between;
-    padding: 15px 20px; 
-    background: rgba(20, 20, 25, 0.95);
-    backdrop-filter: blur(10px); 
-    position: sticky; 
-    top: 0; 
-    z-index: 100;
-    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 15px 20px; background: rgba(10, 10, 15, 0.8);
+    backdrop-filter: blur(15px); position: sticky; top: 0; z-index: 100;
+    border-bottom: 1px solid var(--glass);
 }
 
-.btn-icon-header, .btn-add-main {
-    background: none; 
-    border: none; 
-    color: white; 
-    cursor: pointer;
-}
-
-/* MENU LATERAL */
+/* MENU LATERAL AJUSTADO */
 .drawer {
-    position: fixed; 
-    top: 0; 
-    left: -280px; 
-    width: 280px; 
-    height: 100%;
-    background: #16161d; 
-    z-index: 1001; 
-    transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    padding: 20px;
-    border-right: 1px solid var(--border);
+    position: fixed; top: 0; left: -280px; width: 280px; height: 100%;
+    background: #111; z-index: 1001; transition: 0.3s;
+    padding: 20px; border-right: 1px solid var(--glass);
 }
 .drawer.open { left: 0; }
+.drawer-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 30px; }
+.btn-close-menu { background: none; border: none; color: white; padding: 5px; }
 
-#overlay {
-    position: fixed; 
-    inset: 0; 
-    background: rgba(0,0,0,0.8);
-    display: none; 
-    z-index: 1000;
+/* CARDS DE MATÉRIA (COM BIMESTRES) */
+.materia-card {
+    background: var(--card); border: 1px solid var(--glass);
+    padding: 20px; border-radius: 20px; margin-bottom: 15px;
 }
-#overlay.active { display: block; }
-
-.nav-item-drawer {
-    display: flex; 
-    align-items: center; 
-    gap: 15px; 
-    width: 100%;
-    padding: 15px; 
-    background: transparent; 
-    border: none; 
-    color: #bbb;
-    font-size: 1rem; 
-    border-radius: 12px; 
-    margin-bottom: 8px;
+.bimestres-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 15px;
 }
-.nav-item-drawer.active { 
-    background: var(--primary); 
-    color: white; 
+.bimestre-item { text-align: center; }
+.bimestre-item label { font-size: 0.7rem; color: #888; display: block; margin-bottom: 5px; }
+.bimestre-item input {
+    width: 100%; background: #222; border: 1px solid #444; color: white;
+    text-align: center; padding: 8px 0; border-radius: 8px; font-size: 0.9rem;
 }
 
-/* CARDS DE NOTAS */
-.tab-content { padding: 20px; }
+/* BOTÃO DE LIXEIRA */
+.btn-trash { background: none; border: none; color: #ff4d4d; cursor: pointer; padding: 5px; }
 
-.stats-overview { 
-    display: grid; 
-    grid-template-columns: 1fr 1fr; 
-    gap: 15px; 
-    margin-bottom: 25px; 
-}
-
-.stat-item { 
-    background: var(--card-bg); 
-    padding: 20px; 
-    border-radius: 20px; 
-    text-align: center; 
-    border: 1px solid var(--border); 
-}
-
-.stat-item span { 
-    display: block; 
-    font-size: 1.8rem; 
-    font-weight: bold; 
-    color: var(--primary); 
-}
-
-/* GRÁFICO */
-.card-grafico { 
-    background: var(--card-bg); 
-    padding: 20px; 
-    border-radius: 20px; 
-    border: 1px solid var(--border);
-}
-.chart-container { height: 300px; margin-top: 20px; }
-
-/* MODAL */
+/* MODAIS */
 .modal-container {
-    position: fixed; 
-    inset: 0; 
-    background: rgba(0,0,0,0.9); 
-    z-index: 2000; 
-    display: none; 
-    align-items: center; 
-    justify-content: center; 
-    padding: 20px;
+    position: fixed; inset: 0; background: rgba(0,0,0,0.9);
+    z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px;
 }
+.modal-content { background: #1a1a22; padding: 25px; border-radius: 25px; width: 100%; max-width: 320px; text-align: center; }
