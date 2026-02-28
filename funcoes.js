@@ -6,7 +6,8 @@ function toggleMenu() {
 }
 
 function navegar(p) {
-    if(p === 'agenda') alert("Agenda em breve!");
+    if(p === 'agenda') alert("📅 Agenda: Em breve poderás marcar teus testes aqui!");
+    if(p === 'ranking') alert("🏆 Ranking: Em breve verás quem é o melhor da DT School!");
     toggleMenu();
 }
 
@@ -18,16 +19,21 @@ function atualizarLista() {
     if(!lista) return;
 
     lista.innerHTML = materias.map(m => {
-        const soma = (m.n1||0) + (m.n2||0) + (m.n3||0) + (m.n4||0);
+        const soma = (Number(m.n1)||0) + (Number(m.n2)||0) + (Number(m.n3)||0) + (Number(m.n4)||0);
         const media = (soma / 4).toFixed(1);
         const falta = Math.max(0, (24 - soma)).toFixed(1);
         const percent = Math.min((media / 10) * 100, 100);
 
         return `
         <div class="materia-card">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <h3 style="color:white;">${m.nome}</h3>
-                <button onclick="excluirMateria(${m.id})" class="btn-icon" style="color:#ff4444;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                <div>
+                    <h3 style="color:white; margin-bottom:4px;">${m.nome}</h3>
+                    <span style="font-size:10px; color:${media >= 6 ? '#00ff66' : '#888'}; font-weight:bold;">
+                        ${media >= 6 ? 'APROVADO' : 'EM CURSO'}
+                    </span>
+                </div>
+                <button onclick="excluirMateria(${m.id})" class="btn-icon" style="color:#ff4444; padding:5px;">
                     <i data-lucide="trash-2"></i>
                 </button>
             </div>
@@ -36,7 +42,7 @@ function atualizarLista() {
             
             <div style="display:flex; justify-content:space-between; font-size:11px; color:#666; margin-bottom:12px;">
                 <span>Média: ${media}</span>
-                <span>${falta > 0 ? 'Faltam ' + falta + ' pts' : 'Aprovado!'}</span>
+                <span>${falta > 0 ? 'Faltam ' + falta + ' pts' : 'Meta batida!'}</span>
             </div>
 
             <div class="bimestres-grid">
@@ -49,12 +55,13 @@ function atualizarLista() {
         `;
     }).join('');
     
+    // Stats Globais
     const total = materias.length;
-    const mediaGeral = total > 0 ? (materias.reduce((acc, m) => acc + (m.n1+m.n2+m.n3+m.n4)/4, 0) / total).toFixed(1) : "0.0";
+    const mediaGeral = total > 0 ? (materias.reduce((acc, m) => acc + (Number(m.n1)+Number(m.n2)+Number(m.n3)+Number(m.n4))/4, 0) / total).toFixed(1) : "0.0";
     document.getElementById('media-geral').innerText = mediaGeral;
-    document.getElementById('aprov-count').innerText = `${materias.filter(m => (m.n1+m.n2+m.n3+m.n4)/4 >= 6).length}/${total}`;
+    document.getElementById('aprov-count').innerText = `${materias.filter(m => (Number(m.n1)+Number(m.n2)+Number(m.n3)+Number(m.n4))/4 >= 6).length}/${total}`;
     
-    lucide.createIcons(); // Ativa a lixeirinha
+    lucide.createIcons(); // Renderiza as lixeiras
 }
 
 function salvarNota(id, b, val) {
@@ -76,7 +83,7 @@ function confirmarNovaMateria() {
 }
 
 function excluirMateria(id) {
-    if(confirm("Deseja apagar?")) {
+    if(confirm("Desejas apagar esta disciplina?")) {
         materias = materias.filter(m => m.id !== id);
         localStorage.setItem('materias', JSON.stringify(materias));
         atualizarLista();
