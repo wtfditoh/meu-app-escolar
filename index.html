@@ -5,25 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>DT School Pro</title>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="stylesheet" href="estilo.css?v=2.0">
+    <link rel="stylesheet" href="estilo.css?v=3.0">
 </head>
 <body>
     <div id="overlay" onclick="toggleMenu()"></div>
 
     <header class="glass-header">
         <button onclick="toggleMenu()" class="btn-icon"><i data-lucide="menu"></i></button>
-        <h1>DT School<span class="logo-dot">.</span></h1>
+        <h1><span class="logo-dot">.</span>DT School</h1>
         <button onclick="abrirModal()" class="btn-add-main">+</button>
     </header>
 
     <nav id="menu-lateral" class="drawer">
         <div class="drawer-header">
-            <span style="font-weight:bold;">DT SCHOOL<span class="logo-dot">.</span></span>
+            <span style="font-weight:bold;"><span class="logo-dot">.</span>DT SCHOOL</span>
             <button onclick="toggleMenu()" class="btn-close"><i data-lucide="x"></i></button>
         </div>
-        <button onclick="navegar('notas')" class="nav-item active"><i data-lucide="layout-grid"></i> Notas</button>
-        <button onclick="navegar('ranking')" class="nav-item"><i data-lucide="trophy"></i> Ranking</button>
-        <button onclick="navegar('agenda')" class="nav-item"><i data-lucide="calendar"></i> Agenda</button>
+        <button onclick="navegar('notas', this)" class="nav-item active"><i data-lucide="layout-grid"></i> Notas</button>
+        <button onclick="navegar('ranking', this)" class="nav-item"><i data-lucide="trophy"></i> Ranking</button>
+        <button onclick="navegar('agenda', this)" class="nav-item"><i data-lucide="calendar"></i> Agenda</button>
     </nav>
 
     <main class="container">
@@ -66,6 +66,6 @@
         </div>
     </div>
 
-    <script src="funcoes.js?v=2.0"></script>
+    <script src="funcoes.js?v=3.0"></script>
 </body>
 </html>
