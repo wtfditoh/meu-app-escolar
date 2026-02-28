@@ -5,14 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>DT School Pro</title>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="stylesheet" href="estilo.css?v=10.0">
+    <link rel="stylesheet" href="estilo.css?v=11.0">
 </head>
 <body>
     <div id="overlay" onclick="toggleMenu()"></div>
 
     <header class="glass-header">
         <button onclick="toggleMenu()" class="btn-icon"><i data-lucide="menu"></i></button>
-        <h1><span class="logo-dot"></span>DT School</h1>
+        <h1 class="topo-compacto"><span class="logo-dot"></span>DT School</h1>
         <button onclick="abrirModal()" class="btn-add-main">+</button>
     </header>
 
@@ -22,7 +22,7 @@
                 <span class="logo-dot"></span>
                 <span class="logo-text">DT SCHOOL</span>
             </div>
-            <button onclick="toggleMenu()" class="btn-close"><i data-lucide="x"></i></button>
+            <button onclick="toggleMenu()" class="btn-close-box"><i data-lucide="x"></i></button>
         </div>
         <button onclick="navegar('notas')" class="nav-item active"><i data-lucide="layout-grid"></i> Notas</button>
         <button onclick="navegar('ranking')" class="nav-item"><i data-lucide="trophy"></i> Ranking</button>
@@ -52,7 +52,7 @@
         <div class="modal-content">
             <div id="aviso-icon" style="margin-bottom:15px;"></div>
             <h3 id="aviso-titulo"></h3>
-            <p id="aviso-texto"></p>
+            <p id="aviso-texto" style="margin: 10px 0 20px; color: #888;"></p>
             <div class="area-botoes-modal">
                 <button onclick="fecharAviso()" class="btn-modal-acao" style="width:100%">Entendido</button>
             </div>
@@ -61,7 +61,7 @@
 
     <div id="modal-excluir-container" class="modal-custom">
         <div class="modal-content">
-            <i data-lucide="alert-triangle" style="color:#ff4444; width:45px; height:45px; margin:0 auto 15px;"></i>
+            <i data-lucide="alert-triangle" style="color:#ff4444; width:40px; margin-bottom:10px;"></i>
             <h3>Apagar Disciplina?</h3>
             <div class="area-botoes-modal">
                 <button onclick="fecharModalExcluir()" class="btn-modal-voltar">Voltar</button>
@@ -70,6 +70,6 @@
         </div>
     </div>
 
-    <script src="funcoes.js?v=10.0"></script>
+    <script src="funcoes.js?v=11.0"></script>
 </body>
 </html>
