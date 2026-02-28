@@ -4,23 +4,43 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>DT School</title>
-
-    <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
-    <link rel="apple-touch-icon" href="icon-512.png">
+    <link rel="icon" type="image/png" href="icon-512.png">
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#1a0b2e">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
-    <link rel="stylesheet" href="style.css?v=3.0">
+    <link rel="stylesheet" href="style.css?v=3.5">
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
+    <div id="menu-lateral" class="drawer">
+        <div class="drawer-header">
+            <div class="logo-area">
+                <span class="logo-dot"></span>
+                <h2>DT School</h2>
+            </div>
+            <button onclick="toggleMenu()" class="btn-close-menu">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+        <nav class="drawer-nav">
+            <button onclick="navegar('notas')" class="nav-item-drawer active" id="btn-nav-notas">
+                <i data-lucide="layout-dashboard"></i> Notas
+            </button>
+            <button onclick="navegar('desempenho')" class="nav-item-drawer" id="btn-nav-desempenho">
+                <i data-lucide="trending-up"></i> Desempenho
+            </button>
+            <button onclick="navegar('agenda')" class="nav-item-drawer" id="btn-nav-agenda">
+                <i data-lucide="calendar"></i> Agenda
+            </button>
+        </nav>
+    </div>
+    <div id="overlay" onclick="toggleMenu()"></div>
+
     <header class="glass-header">
+        <button onclick="toggleMenu()" class="btn-icon-header">
+            <i data-lucide="menu"></i>
+        </button>
         <div class="logo-area">
-            <span class="logo-dot"></span>
             <h1>DT School</h1>
         </div>
         <button onclick="adicionarMateria()" class="btn-add-main">
@@ -42,49 +62,46 @@
         <div id="lista-materias"></div>
     </main>
 
-    <main id="aba-agenda" class="tab-content">
-        <div class="header-section" style="text-align: center; padding: 40px 20px;">
-            <i data-lucide="calendar" style="width: 48px; height: 48px; color: #8a2be2; margin-bottom: 15px;"></i>
-            <h2>Minha Agenda</h2>
-            <p style="opacity: 0.5; margin-top: 10px;">Em breve: Controle de provas e tarefas.</p>
+    <main id="aba-desempenho" class="tab-content" style="display: none;">
+        <div class="card-grafico">
+            <h3>Evolução de Médias</h3>
+            <div class="chart-container">
+                <canvas id="graficoDesempenho"></canvas>
+            </div>
         </div>
     </main>
 
-    <div id="modal-materia" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 9999; align-items: center; justify-content: center; padding: 20px;">
-        <div style="background: #1a1a22; border: 1px solid rgba(255,255,255,0.1); padding: 30px; border-radius: 28px; width: 100%; max-width: 340px; text-align: center;">
-            <h3 style="margin-bottom: 20px; color: #fff; font-family: sans-serif;">Nova Disciplina</h3>
-            <input type="text" id="nome-materia-input" placeholder="Ex: Matemática" 
-                style="width: 100%; background: #25252b; border: 1px solid #444; padding: 15px; border-radius: 12px; color: white; margin-bottom: 20px; text-align: center; outline: none;">
-            <div style="display: flex; gap: 10px;">
-                <button onclick="fecharModal()" style="flex: 1; background: #333; color: #eee; border: none; padding: 12px; border-radius: 12px; font-weight: bold; cursor: pointer;">Cancelar</button>
-                <button onclick="confirmarNovaMateria()" style="flex: 1; background: #8a2be2; color: white; border: none; padding: 12px; border-radius: 12px; font-weight: bold; cursor: pointer;">Adicionar</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="modal-excluir" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 9999; align-items: center; justify-content: center; padding: 20px;">
-        <div style="background: #1a1a22; border: 1px solid rgba(255,255,255,0.1); padding: 30px; border-radius: 28px; width: 100%; max-width: 340px; text-align: center;">
-            <div style="color: #ff4d4d; margin-bottom: 15px;"><i data-lucide="trash-2" style="width: 40px; height: 40px;"></i></div>
-            <h3 style="margin-bottom: 10px; color: #fff; font-family: sans-serif;">Excluir Matéria?</h3>
-            <p style="color: #888; font-size: 0.9rem; margin-bottom: 25px;">Tem certeza que deseja apagar esta disciplina? As notas serão perdidas.</p>
-            <div style="display: flex; gap: 10px;">
-                <button onclick="fecharModalExcluir()" style="flex: 1; background: #333; color: #eee; border: none; padding: 12px; border-radius: 12px; font-weight: bold; cursor: pointer;">Não</button>
-                <button id="btn-confirmar-exclusao" style="flex: 1; background: #ff4d4d; color: white; border: none; padding: 12px; border-radius: 12px; font-weight: bold; cursor: pointer;">Sim, excluir</button>
-            </div>
-        </div>
-    </div>
-
-    <nav class="bottom-nav">
-        <button onclick="mudarAba('notas')" class="nav-item active" id="nav-notas">
-            <i data-lucide="layout-dashboard"></i>
-            <span>Notas</span>
-        </button>
-        <button onclick="mudarAba('agenda')" class="nav-item" id="nav-agenda">
+    <main id="aba-agenda" class="tab-content" style="display: none;">
+        <div class="empty-state">
             <i data-lucide="calendar"></i>
-            <span>Agenda</span>
-        </button>
-    </nav>
+            <h2>Minha Agenda</h2>
+            <p>Em breve: Organize suas provas e entregas.</p>
+        </div>
+    </main>
 
-    <script src="script.js?v=3.0"></script>
+    <div id="modal-materia" class="modal-container" style="display: none;">
+        <div class="modal-content">
+            <h3>Nova Disciplina</h3>
+            <input type="text" id="nome-materia-input" placeholder="Ex: Matemática">
+            <div class="modal-btns">
+                <button onclick="fecharModal()" class="btn-cancel">Cancelar</button>
+                <button onclick="confirmarNovaMateria()" class="btn-confirm">Adicionar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-excluir" class="modal-container" style="display: none;">
+        <div class="modal-content">
+            <i data-lucide="trash-2" style="color: #ff4d4d; margin-bottom: 10px;"></i>
+            <h3>Excluir Matéria?</h3>
+            <p>As notas serão perdidas permanentemente.</p>
+            <div class="modal-btns">
+                <button onclick="fecharModalExcluir()" class="btn-cancel">Não</button>
+                <button id="btn-confirmar-exclusao" class="btn-delete">Sim, excluir</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js?v=3.5"></script>
 </body>
 </html>
