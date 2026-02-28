@@ -1,53 +1,42 @@
 :root {
     --bg: #05050a;
     --primary: #8a2be2;
+    --success: #00ff7f;
     --glass: rgba(255, 255, 255, 0.08);
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
+body { background: var(--bg); color: white; overflow-x: hidden; }
 
-body { 
-    background: var(--bg) radial-gradient(circle at top right, #1a0b2e, #05050a) no-repeat fixed !important;
-    color: white !important;
+.logo-dot { color: var(--success); text-shadow: 0 0 10px var(--success); }
+
+.glass-header { 
+    display: flex; align-items: center; justify-content: space-between; 
+    padding: 15px 20px; background: rgba(5,5,10,0.8); backdrop-filter: blur(15px);
+    position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--glass);
 }
 
-.glass-header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 15px 20px; background: rgba(5, 5, 10, 0.8);
-    backdrop-filter: blur(20px); position: sticky; top: 0; z-index: 100;
-    border-bottom: 1px solid var(--glass);
-}
-
-.btn-add-main { background: var(--primary); color: white; border: none; width: 45px; height: 45px; border-radius: 14px; font-weight: bold; font-size: 24px; box-shadow: 0 4px 15px rgba(138, 43, 226, 0.4); }
+.btn-add-main { background: var(--primary); color: white; border: none; width: 42px; height: 42px; border-radius: 12px; font-size: 24px; box-shadow: 0 0 15px rgba(138,43,226,0.3); }
 
 /* MENU LATERAL */
-.drawer { position: fixed; top: 0; left: -100%; width: 280px; height: 100%; background: #0a0a0f; z-index: 1001; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); padding: 25px; border-right: 1px solid var(--glass); }
+.drawer { position: fixed; top: 0; left: -100%; width: 280px; height: 100%; background: #0a0a0f; z-index: 1001; transition: 0.3s; padding: 20px; border-right: 1px solid var(--glass); }
 .drawer.open { left: 0; }
-.nav-item { display: flex; align-items: center; gap: 12px; width: 100%; padding: 15px; background: none; border: none; color: #666; border-radius: 12px; margin-bottom: 8px; text-align: left; transition: 0.3s; }
-.nav-item.active { background: rgba(138, 43, 226, 0.15); color: var(--primary); font-weight: bold; }
+.drawer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+.btn-close { background: var(--glass); border: none; color: white; width: 35px; height: 35px; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
 
-/* CARDS DE MATÉRIA */
-.materia-card { background: rgba(255,255,255,0.04); border: 1px solid var(--glass); padding: 20px; border-radius: 24px; margin: 15px; backdrop-filter: blur(10px); }
-.progress-bg { height: 6px; background: #1a1a1a; border-radius: 10px; margin: 12px 0; overflow: hidden; }
-.progress-fill { height: 100%; background: var(--primary); transition: 0.8s ease-in-out; }
+/* MATÉRIAS E BARRINHAS */
+.materia-card { background: var(--glass); padding: 20px; border-radius: 22px; margin: 15px; border: 1px solid rgba(255,255,255,0.05); }
+.status-badge { font-size: 10px; padding: 4px 10px; border-radius: 20px; font-weight: bold; border: 1px solid rgba(255,255,255,0.1); }
+.aprovado { color: var(--success); border-color: var(--success); background: rgba(0,255,127,0.1); box-shadow: 0 0 10px rgba(0,255,127,0.1); }
 
-.bimestres-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 15px; }
-.bimestre-input { width: 100%; background: #000; border: 1px solid #333; color: white; text-align: center; padding: 10px 0; border-radius: 10px; font-weight: bold; outline: none; }
-.bimestre-input:focus { border-color: var(--primary); }
+.progress-bg { height: 8px; background: #1a1a1a; border-radius: 10px; margin: 15px 0; overflow: hidden; }
+.progress-fill { height: 100%; transition: 0.6s ease; }
 
-/* MODAL CENTRALIZADO */
-.modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 2000; padding: 20px; }
-.modal-content { background: #16161d; padding: 30px; border-radius: 28px; width: 100%; max-width: 340px; border: 1px solid var(--glass); text-align: center; animation: fadeIn 0.3s ease; }
-.modal-content input { width: 100%; padding: 15px; background: #000; border: 1px solid #333; color: white; margin: 20px 0; border-radius: 14px; text-align: center; font-size: 1rem; }
+/* MODAIS */
+.modal, .modal-custom { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: none; align-items: center; justify-content: center; z-index: 2000; padding: 20px; }
+.modal-content { background: #16161d; padding: 30px; border-radius: 25px; width: 100%; max-width: 320px; text-align: center; border: 1px solid var(--glass); }
+.modal-content input { width: 100%; padding: 15px; background: #000; border: 1px solid #333; color: white; margin: 20px 0; border-radius: 12px; text-align: center; }
 .modal-btns { display: flex; gap: 10px; }
-.btn-confirm { flex: 1; padding: 14px; background: var(--primary); border: none; color: white; border-radius: 12px; font-weight: bold; }
-.btn-cancel { flex: 1; padding: 14px; background: #222; border: none; color: white; border-radius: 12px; }
-
-#overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; z-index: 1000; backdrop-filter: blur(4px); }
-#overlay.active { display: block; }
-.stats-row { display: flex; gap: 10px; padding: 20px; }
-.stat-card { background: rgba(255,255,255,0.04); flex: 1; padding: 15px; border-radius: 20px; text-align: center; border: 1px solid var(--glass); }
-.stat-card span { display: block; font-size: 1.6rem; font-weight: bold; color: var(--primary); }
-.btn-icon { background: none; border: none; color: white; cursor: pointer; }
-
-@keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+.btn-confirm { background: var(--primary); color: white; border: none; padding: 12px; border-radius: 12px; flex: 1; font-weight: bold; }
+.btn-cancel { background: #222; color: white; border: none; padding: 12px; border-radius: 12px; flex: 1; }
+.btn-delete { background: #ff4444; color: white; border: none; padding: 12px; border-radius: 12px; flex: 1; font-weight: bold; }
