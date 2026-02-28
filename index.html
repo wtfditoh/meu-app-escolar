@@ -36,9 +36,20 @@
     <main id="aba-agenda" class="tab-content">
         <div class="header-section">
             <h2 style="margin-bottom: 20px;">📅 Agenda</h2>
-            <p style="opacity: 0.5">Em breve: Gerenciador de tarefas completo.</p>
+            <p style="opacity: 0.5">Organize suas tarefas e provas aqui.</p>
         </div>
     </main>
+
+    <div id="modal-materia" class="modal">
+        <div class="modal-content">
+            <h3>Nova Disciplina</h3>
+            <input type="text" id="nome-materia-input" placeholder="Ex: Matemática">
+            <div class="modal-actions">
+                <button onclick="fecharModal()" class="btn-cancel">Cancelar</button>
+                <button onclick="confirmarNovaMateria()" class="btn-confirm">Adicionar</button>
+            </div>
+        </div>
+    </div>
 
     <nav class="bottom-nav">
         <button onclick="mudarAba('notas')" class="nav-item active" id="nav-notas">
