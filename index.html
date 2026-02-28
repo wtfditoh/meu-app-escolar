@@ -40,15 +40,23 @@
         </div>
     </main>
 
-    <div id="modal-materia" class="modal">
-        <div class="modal-content">
-            <h3>Nova Disciplina</h3>
-            <input type="text" id="nome-materia-input" placeholder="Ex: Matemática">
-            <div class="modal-actions">
-                <button onclick="fecharModal()" class="btn-cancel">Cancelar</button>
-                <button onclick="confirmarNovaMateria()" class="btn-confirm">Adicionar</button>
-            </div>
+    <div id="modal-materia" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 9999; align-items: center; justify-content: center; padding: 20px;">
+    <div style="background: #1a1a22; border: 1px solid rgba(255,255,255,0.1); padding: 30px; border-radius: 28px; width: 100%; max-width: 340px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5);">
+        <h3 style="margin-bottom: 20px; color: #fff; font-family: sans-serif;">Nova Disciplina</h3>
+        <input type="text" id="nome-materia-input" placeholder="Ex: Matemática" 
+            style="width: 100%; background: #25252b; border: 1px solid #444; padding: 15px; border-radius: 12px; color: white; font-size: 1rem; margin-bottom: 20px; text-align: center; outline: none;">
+        
+        <div style="display: flex; gap: 10px;">
+            <button onclick="fecharModal()" 
+                style="flex: 1; background: #333; color: #eee; border: none; padding: 12px; border-radius: 12px; font-weight: bold; cursor: pointer;">
+                Cancelar
+            </button>
+            <button onclick="confirmarNovaMateria()" 
+                style="flex: 1; background: #8a2be2; color: white; border: none; padding: 12px; border-radius: 12px; font-weight: bold; cursor: pointer;">
+                Adicionar
+            </button>
         </div>
+    </div>
     </div>
 
     <nav class="bottom-nav">
