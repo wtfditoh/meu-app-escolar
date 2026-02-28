@@ -1,32 +1,31 @@
-// Inicialização
 document.addEventListener('DOMContentLoaded', () => {
     lucide.createIcons();
     renderizarMaterias();
-    renderizarTarefas();
 });
 
 let materias = JSON.parse(localStorage.getItem('dt_materias')) || [];
-let tarefas = JSON.parse(localStorage.getItem('dt_tarefas')) || [];
 
-// --- GESTÃO DE MATÉRIAS ---
 function adicionarMateria() {
     const nome = prompt("Nome da Disciplina:");
     if (!nome) return;
-
-    materias.push({
-        id: Date.now(),
-        nome: nome,
-        notas: [0, 0, 0, 0]
-    });
+    materias.push({ id: Date.now(), nome: nome, notas: [0, 0, 0, 0] });
     salvar();
     renderizarMaterias();
+}
+
+function removerMateria(id) {
+    if(confirm("Excluir matéria?")) {
+        materias = materias.filter(m => m.id !== id);
+        salvar();
+        renderizarMaterias();
+    }
 }
 
 function atualizarNota(id, index, valor) {
     const mat = materias.find(m => m.id === id);
     mat.notas[index] = parseFloat(valor) || 0;
     salvar();
-    atualizarStats();
+    atualizarStats(); // Atualiza os números no topo sem recarregar tudo
 }
 
 function renderizarMaterias() {
@@ -54,50 +53,30 @@ function renderizarMaterias() {
                     ${m.notas.map((n, i) => `
                         <div class="input-group">
                             <label>${i+1}ºB</label>
-                            <input type="number" value="${n}" step="0.5" 
-                            onchange="atualizarNota(${m.id}, ${i}, this.value)">
+                            <input type="number" value="${n}" onchange="atualizarNota(${m.id}, ${i}, this.value)">
                         </div>
                     `).join('')}
                 </div>
             </div>
         `;
     });
-    lucide.createIcons(); // Recarrega os ícones
+    lucide.createIcons();
     atualizarStats();
 }
 
-// Adicione esta função para excluir
-function removerMateria(id) {
-    if(confirm("Deseja excluir esta matéria?")) {
-        materias = materias.filter(m => m.id !== id);
-        salvar();
-        renderizarMaterias();
-    }
-}
-
-
 function atualizarStats() {
-    const totalNotas = materias.reduce((acc, m) => acc + m.notas.reduce((a, b) => a + b, 0), 0);
-    const media = materias.length ? (totalNotas / (materias.length * 4)).toFixed(1) : "0.0";
+    const totalMaterias = materias.length;
     const aprovadas = materias.filter(m => m.notas.reduce((a, b) => a + b, 0) >= 24).length;
+    
+    // Média Geral
+    const somaNotas = materias.reduce((acc, m) => acc + m.notas.reduce((a, b) => a + b, 0), 0);
+    const media = totalMaterias ? (somaNotas / (totalMaterias * 4)).toFixed(1) : "0.0";
 
     document.getElementById('media-geral').innerText = media;
-    document.getElementById('materias-aprovadas').innerText = aprovadas;
+    // MOSTRA "2/5" POR EXEMPLO
+    document.getElementById('materias-aprovadas').innerText = `${aprovadas}/${totalMaterias}`;
 }
 
-// --- NAVEGAÇÃO ---
-function mudarAba(aba) {
-    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    
-    document.getElementById(`aba-${aba}`).classList.add('active');
-    document.getElementById(`nav-${aba}`).classList.add('active');
-}
-
-// --- PERSISTÊNCIA ---
 function salvar() {
     localStorage.setItem('dt_materias', JSON.stringify(materias));
-    localStorage.setItem('dt_tarefas', JSON.stringify(tarefas));
 }
-
-// (Funções de Agenda/Modal omitidas por brevidade, mas seguem a mesma lógica de salvar/renderizar)
