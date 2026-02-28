@@ -1,26 +1,12 @@
-// 1. FUNÇÃO DE MUDAR ABA (Garante que os botões funcionem)
 function mudarAba(aba) {
-    // Seleciona todas as seções e botões
-    const abas = document.querySelectorAll('.tab-content');
-    const botoes = document.querySelectorAll('.nav-item');
-
-    // Esconde tudo
-    abas.forEach(a => a.classList.remove('active'));
-    botoes.forEach(b => b.classList.remove('active'));
-
-    // Mostra só o que foi clicado
-    const abaAtiva = document.getElementById('aba-' + aba);
-    const botaoAtivo = document.getElementById('nav-' + aba);
-    
-    if (abaAtiva && botaoAtivo) {
-        abaAtiva.classList.add('active');
-        botaoAtivo.classList.add('active');
-    }
+    document.querySelectorAll('.tab-content').forEach(a => a.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+    document.getElementById('aba-' + aba).classList.add('active');
+    document.getElementById('nav-' + aba).classList.add('active');
 }
 
-// 2. INICIALIZAÇÃO
 document.addEventListener('DOMContentLoaded', () => {
-    if (typeof lucide !== 'undefined') lucide.createIcons();
+    if (window.lucide) lucide.createIcons();
     renderizarMaterias();
 });
 
@@ -39,7 +25,7 @@ function adicionarMateria() {
 }
 
 function removerMateria(id) {
-    if(confirm("Deseja excluir esta matéria?")) {
+    if(confirm("Excluir esta matéria?")) {
         materias = materias.filter(m => m.id !== id);
         salvar();
         renderizarMaterias();
@@ -70,7 +56,7 @@ function renderizarMaterias() {
                     <div>
                         <h3>${m.nome}</h3>
                         <span class="status-badge ${isAprovado ? 'aprovado' : 'pendente'}">
-                            ${isAprovado ? 'APROVADO' : (24 - total).toFixed(1) + ' PTS FALTAM'}
+                            ${isAprovado ? 'APROVADO' : (24 - total).toFixed(1) + ' FALTAM'}
                         </span>
                     </div>
                     <button onclick="removerMateria(${m.id})" class="btn-delete">
@@ -88,7 +74,7 @@ function renderizarMaterias() {
             </div>
         `;
     });
-    if (typeof lucide !== 'undefined') lucide.createIcons();
+    if (window.lucide) lucide.createIcons();
     atualizarStats();
 }
 
@@ -98,9 +84,6 @@ function atualizarStats() {
     const somaGeral = materias.reduce((acc, m) => acc + m.notas.reduce((a, b) => a + b, 0), 0);
     const mediaGeral = total ? (somaGeral / (total * 4)).toFixed(1) : "0.0";
 
-    const elMedia = document.getElementById('media-geral');
-    const elAprovadas = document.getElementById('materias-aprovadas');
-    
-    if (elMedia) elMedia.innerText = mediaGeral;
-    if (elAprovadas) elAprovadas.innerText = `${aprovadas}/${total}`;
+    if (document.getElementById('media-geral')) document.getElementById('media-geral').innerText = mediaGeral;
+    if (document.getElementById('materias-aprovadas')) document.getElementById('materias-aprovadas').innerText = `${aprovadas}/${total}`;
 }
