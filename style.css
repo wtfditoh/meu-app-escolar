@@ -11,11 +11,45 @@
 * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
 
 body {
-    background: #000; /* Fundo totalmente preto para evitar bordas brancas */
+    /* O degradê que você gostou */
+    background: radial-gradient(circle at top right, #1a0b2e, #050505) no-repeat;
+    background-attachment: fixed;
     color: #fff;
-    padding: 15px;
+    font-family: 'Segoe UI', sans-serif;
+    padding: 20px;
     padding-bottom: 100px;
+    min-height: 100vh;
 }
+
+/* Para as abas funcionarem */
+.tab-content {
+    display: none; /* Esconde as abas por padrão */
+    animation: fadeIn 0.3s ease;
+}
+
+.tab-content.active {
+    display: block; /* Só mostra a aba ativa */
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Estilo da Agenda para não ficar bagunçado */
+.agenda-container {
+    padding: 10px;
+}
+.tarefa-item {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 15px;
+    border-radius: 15px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
 
 /* Header */
 .glass-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
