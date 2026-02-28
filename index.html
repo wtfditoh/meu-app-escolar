@@ -5,25 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>DT School Pro</title>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="stylesheet" href="estilo.css?v=3.0">
+    <link rel="stylesheet" href="estilo.css?v=5.0">
 </head>
 <body>
     <div id="overlay" onclick="toggleMenu()"></div>
 
     <header class="glass-header">
         <button onclick="toggleMenu()" class="btn-icon"><i data-lucide="menu"></i></button>
-        <h1><span class="logo-dot">.</span>DT School</h1>
+        <h1><span class="logo-dot"></span>DT School</h1>
         <button onclick="abrirModal()" class="btn-add-main">+</button>
     </header>
 
     <nav id="menu-lateral" class="drawer">
         <div class="drawer-header">
-            <span style="font-weight:bold;"><span class="logo-dot">.</span>DT SCHOOL</span>
+            <span style="font-weight:bold;"><span class="logo-dot"></span>DT SCHOOL</span>
             <button onclick="toggleMenu()" class="btn-close"><i data-lucide="x"></i></button>
         </div>
-        <button onclick="navegar('notas', this)" class="nav-item active"><i data-lucide="layout-grid"></i> Notas</button>
-        <button onclick="navegar('ranking', this)" class="nav-item"><i data-lucide="trophy"></i> Ranking</button>
-        <button onclick="navegar('agenda', this)" class="nav-item"><i data-lucide="calendar"></i> Agenda</button>
+        <button onclick="navegar('notas')" class="nav-item active"><i data-lucide="layout-grid"></i> Notas</button>
+        <button onclick="navegar('ranking')" class="nav-item"><i data-lucide="trophy"></i> Ranking</button>
+        <button onclick="navegar('agenda')" class="nav-item"><i data-lucide="calendar"></i> Agenda</button>
     </nav>
 
     <main class="container">
@@ -58,14 +58,13 @@
         <div class="modal-content" style="border: 1px solid rgba(255,68,68,0.3)">
             <i data-lucide="alert-triangle" style="color:#ff4444; width:45px; height:45px;"></i>
             <h3>Apagar Disciplina?</h3>
-            <p style="color:#888; margin:15px 0;">Esta ação não pode ser desfeita.</p>
-            <div class="modal-btns">
+            <div class="modal-btns" style="margin-top:20px;">
                 <button onclick="fecharModalExcluir()" class="btn-cancel">Voltar</button>
                 <button onclick="confirmarExclusao()" class="btn-delete">Apagar</button>
             </div>
         </div>
     </div>
 
-    <script src="funcoes.js?v=3.0"></script>
+    <script src="funcoes.js?v=5.0"></script>
 </body>
 </html>
