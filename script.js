@@ -1,3 +1,10 @@
+let materias = JSON.parse(localStorage.getItem('dt_materias')) || [];
+
+document.addEventListener('DOMContentLoaded', () => {
+    if (window.lucide) lucide.createIcons();
+    renderizarMaterias();
+});
+
 function mudarAba(aba) {
     document.querySelectorAll('.tab-content').forEach(a => a.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
@@ -5,29 +12,30 @@ function mudarAba(aba) {
     document.getElementById('nav-' + aba).classList.add('active');
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    if (window.lucide) lucide.createIcons();
-    renderizarMaterias();
-});
-
-let materias = JSON.parse(localStorage.getItem('dt_materias')) || [];
-
-function salvar() {
-    localStorage.setItem('dt_materias', JSON.stringify(materias));
+/* Lógica do Modal */
+function adicionarMateria() {
+    document.getElementById('modal-materia').style.display = 'flex';
 }
 
-function adicionarMateria() {
-    const nome = prompt("Nome da Disciplina:");
-    if (!nome) return;
-    materias.push({ id: Date.now(), nome: nome, notas: [0, 0, 0, 0] });
-    salvar();
-    renderizarMaterias();
+function fecharModal() {
+    document.getElementById('modal-materia').style.display = 'none';
+    document.getElementById('nome-materia-input').value = '';
+}
+
+function confirmarNovaMateria() {
+    const nome = document.getElementById('nome-materia-input').value.trim();
+    if (nome) {
+        materias.push({ id: Date.now(), nome: nome, notas: [0, 0, 0, 0] });
+        localStorage.setItem('dt_materias', JSON.stringify(materias));
+        renderizarMaterias();
+        fecharModal();
+    }
 }
 
 function removerMateria(id) {
     if(confirm("Excluir esta matéria?")) {
         materias = materias.filter(m => m.id !== id);
-        salvar();
+        localStorage.setItem('dt_materias', JSON.stringify(materias));
         renderizarMaterias();
     }
 }
@@ -36,7 +44,7 @@ function atualizarNota(id, index, valor) {
     const mat = materias.find(m => m.id === id);
     if (mat) {
         mat.notas[index] = parseFloat(valor) || 0;
-        salvar();
+        localStorage.setItem('dt_materias', JSON.stringify(materias));
         atualizarStats();
     }
 }
@@ -84,6 +92,6 @@ function atualizarStats() {
     const somaGeral = materias.reduce((acc, m) => acc + m.notas.reduce((a, b) => a + b, 0), 0);
     const mediaGeral = total ? (somaGeral / (total * 4)).toFixed(1) : "0.0";
 
-    if (document.getElementById('media-geral')) document.getElementById('media-geral').innerText = mediaGeral;
-    if (document.getElementById('materias-aprovadas')) document.getElementById('materias-aprovadas').innerText = `${aprovadas}/${total}`;
+    document.getElementById('media-geral').innerText = mediaGeral;
+    document.getElementById('materias-aprovadas').innerText = `${aprovadas}/${total}`;
 }
