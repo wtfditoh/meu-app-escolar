@@ -14,7 +14,9 @@ function mudarAba(aba) {
 
 /* Lógica do Modal */
 function adicionarMateria() {
-    document.getElementById('modal-materia').style.display = 'flex';
+    const modal = document.getElementById('modal-materia');
+    modal.style.display = 'flex'; // Isso ativa o alinhamento centralizado
+    document.getElementById('nome-materia-input').focus();
 }
 
 function fecharModal() {
