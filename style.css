@@ -2,63 +2,62 @@
     --bg: #05050a;
     --primary: #8a2be2;
     --card: rgba(255, 255, 255, 0.05);
-    --glass: rgba(255, 255, 255, 0.08);
+    --glass: rgba(255, 255, 255, 0.1);
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
 
 body { 
     background: #05050a radial-gradient(circle at top right, #1a0b2e, #05050a) no-repeat fixed;
     color: white; min-height: 100vh;
 }
 
-/* HEADER FIXO */
+/* HEADER */
 .glass-header {
     display: flex; align-items: center; justify-content: space-between;
     padding: 15px 20px; background: rgba(10, 10, 15, 0.9);
     backdrop-filter: blur(15px); position: sticky; top: 0; z-index: 100;
 }
 
-.btn-add-main {
-    background: var(--primary); color: white; border: none;
-    padding: 10px 15px; border-radius: 12px; font-weight: bold;
-}
+.btn-plus { background: var(--primary); color: white; border: none; padding: 10px 18px; border-radius: 12px; font-weight: bold; }
 
-/* MENU LATERAL CORRIGIDO */
+/* MENU LATERAL CORRIGIDO (Prints 1000900007) */
 .drawer {
-    position: fixed; top: 0; left: -280px; width: 280px; height: 100%;
+    position: fixed; top: 0; left: -100%; width: 280px; height: 100%;
     background: #0f0f14; z-index: 1001; transition: 0.3s ease;
-    padding: 20px; border-right: 1px solid var(--glass);
+    padding: 25px; border-right: 1px solid var(--glass);
 }
 .drawer.open { left: 0; }
+.drawer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+.btn-close { background: #222; border: none; color: white; padding: 10px; border-radius: 10px; }
 
-.drawer-header {
-    display: flex; justify-content: space-between; align-items: center;
-    margin-bottom: 30px; padding-bottom: 15px; border-bottom: 1px solid var(--glass);
-}
-
-.btn-close { background: #222; border: none; color: white; padding: 8px; border-radius: 8px; cursor: pointer; }
-
-.nav-item-drawer {
-    display: flex; align-items: center; gap: 12px; width: 100%;
+.nav-item {
+    display: flex; align-items: center; gap: 15px; width: 100%;
     padding: 15px; background: none; border: none; color: #888;
-    font-size: 1rem; border-radius: 12px; margin-bottom: 8px; text-align: left;
+    font-size: 1rem; border-radius: 12px; margin-bottom: 5px; text-align: left;
 }
-.nav-item-drawer.active { background: rgba(138, 43, 226, 0.15); color: var(--primary); }
+.nav-item.active { background: rgba(138, 43, 226, 0.2); color: var(--primary); font-weight: bold; }
 
-/* CARDS E GRID */
+/* CONTEÚDO E CARDS */
 .tab-content { padding: 20px; }
-.stats-row { display: flex; gap: 15px; margin-bottom: 20px; font-size: 0.9rem; color: #888; }
-
 .materia-card {
     background: var(--card); border: 1px solid var(--glass);
     padding: 20px; border-radius: 20px; margin-bottom: 15px;
 }
-.bimestres-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 15px; }
+.bimestres-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 15px; }
 .bimestre-input {
     width: 100%; background: #000; border: 1px solid #333;
-    color: white; text-align: center; padding: 8px 0; border-radius: 8px;
+    color: white; text-align: center; padding: 10px 0; border-radius: 10px; font-weight: bold;
 }
+
+/* MODAL (O que apareceu feio no seu print) */
+.modal-container {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.9);
+    display: none; align-items: center; justify-content: center; z-index: 2000; padding: 20px;
+}
+.modal-content { background: #16161d; padding: 30px; border-radius: 25px; width: 100%; max-width: 350px; text-align: center; border: 1px solid var(--glass); }
+.modal-content input { width: 100%; padding: 15px; background: #222; border: 1px solid #444; color: white; margin: 20px 0; border-radius: 12px; text-align: center; }
+.btn-confirm { background: var(--primary); color: white; border: none; padding: 12px 25px; border-radius: 10px; font-weight: bold; }
 
 #overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; z-index: 1000; }
 #overlay.active { display: block; }
