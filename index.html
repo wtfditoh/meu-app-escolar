@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>DT School Pro</title>
-    <link rel="stylesheet" href="style.css?v=50">
+    <link rel="stylesheet" href="style.css?v=51">
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
@@ -18,35 +18,39 @@
 
     <nav id="menu-lateral" class="drawer">
         <div class="drawer-header">
-            <span>MENU</span>
+            <span>DT SCHOOL</span>
             <button onclick="toggleMenu()" class="btn-close">X</button>
         </div>
         <button onclick="navegar('notas')" id="btn-notas" class="nav-item active">
             <i data-lucide="layout-grid"></i> Notas
         </button>
-        <button onclick="navegar('agenda')" id="btn-agenda" class="nav-item">
+        <button onclick="navegar('desempenho')" class="nav-item">
+            <i data-lucide="trending-up"></i> Desempenho
+        </button>
+        <button onclick="navegar('agenda')" class="nav-item">
             <i data-lucide="calendar"></i> Agenda
         </button>
     </nav>
 
-    <main id="conteudo-principal">
-        <div class="stats-container">
+    <main class="container">
+        <div class="stats-grid">
             <div class="stat-card">
                 <span id="media-geral">0.0</span>
                 <label>Média Geral</label>
             </div>
             <div class="stat-card">
                 <span id="aprovadas-count">0/0</span>
-                <label>Aprovadas</label>
+                <label>Disciplinas</label>
             </div>
         </div>
+        
         <div id="lista-materias"></div>
     </main>
 
     <div id="modal-materia" class="modal">
         <div class="modal-content">
             <h3>Nova Disciplina</h3>
-            <input type="text" id="nome-materia-input" placeholder="Digite o nome...">
+            <input type="text" id="nome-materia-input" placeholder="Ex: Matemática">
             <div class="modal-buttons">
                 <button onclick="fecharModal()" class="btn-cancelar">Sair</button>
                 <button onclick="confirmarNovaMateria()" class="btn-confirmar">Criar</button>
@@ -54,6 +58,6 @@
         </div>
     </div>
 
-    <script src="script.js?v=50"></script>
+    <script src="script.js?v=51"></script>
 </body>
 </html>
