@@ -8,7 +8,6 @@ document.addEventListener('DOMContentLoaded', () => {
     carregarTarefas();
 });
 
-// BUSCA AS MATÉRIAS DAS NOTAS
 function carregarMateriasNoSelect() {
     const select = document.getElementById('tarefa-materia');
     const materiasSalvas = localStorage.getItem('materias_db') || localStorage.getItem('materias');
@@ -81,6 +80,7 @@ function fecharModalAgenda() {
     document.getElementById('preview-container').innerHTML = "";
     imagemBase64 = "";
     document.getElementById('tarefa-nome').value = "";
+    document.getElementById('tarefa-desc').value = "";
 }
 
 function previewImg(input) {
@@ -97,6 +97,7 @@ function previewImg(input) {
 function adicionarTarefa() {
     const btnSalvar = document.getElementById('btn-salvar-agenda');
     const nome = document.getElementById('tarefa-nome').value.trim();
+    const desc = document.getElementById('tarefa-desc').value.trim();
     const dataInicio = document.getElementById('tarefa-data-inicio').value;
     const dataFim = document.getElementById('tarefa-data-fim').value;
     const materia = document.getElementById('tarefa-materia').value;
@@ -109,7 +110,7 @@ function adicionarTarefa() {
         return;
     }
 
-    const nova = { id: Date.now(), nome, dataInicio, dataFim, materia, imagem: imagemBase64, concluida: false };
+    const nova = { id: Date.now(), nome, descricao: desc, dataInicio, dataFim, materia, imagem: imagemBase64, concluida: false };
     let agenda = JSON.parse(localStorage.getItem('dt_agenda') || '[]');
     agenda.push(nova);
     localStorage.setItem('dt_agenda', JSON.stringify(agenda));
@@ -119,7 +120,6 @@ function adicionarTarefa() {
     carregarTarefas(dataFim);
 }
 
-// FUNÇÃO PARA DAR CHECK
 function alternarConcluida(id) {
     let agenda = JSON.parse(localStorage.getItem('dt_agenda') || '[]');
     const index = agenda.findIndex(t => t.id === id);
@@ -127,6 +127,15 @@ function alternarConcluida(id) {
         agenda[index].concluida = !agenda[index].concluida;
         localStorage.setItem('dt_agenda', JSON.stringify(agenda));
         carregarTarefas(dataSelecionada);
+    }
+}
+
+// NOVA FUNÇÃO PARA EXPANDIR O TEXTO
+function expandirTexto(el) {
+    if (el.style.webkitLineClamp === "none") {
+        el.style.webkitLineClamp = "3";
+    } else {
+        el.style.webkitLineClamp = "none";
     }
 }
 
@@ -148,11 +157,8 @@ function carregarTarefas(filtroData = null) {
         return;
     }
 
-    // --- ORDENAÇÃO: PENDENTES NO TOPO, CONCLUÍDAS NO FIM ---
     agenda.sort((a, b) => {
-        if (a.concluida !== b.concluida) {
-            return a.concluida ? 1 : -1; 
-        }
+        if (a.concluida !== b.concluida) return a.concluida ? 1 : -1; 
         return new Date(a.dataFim) - new Date(b.dataFim);
     });
 
@@ -166,27 +172,39 @@ function carregarTarefas(filtroData = null) {
         let textoStatus = `Faltam ${diffDays} dias`;
 
         if (t.concluida) {
-            corStatus = "#00d2ff"; // Azul para feito
-            textoStatus = "CONCLUÍDO! 🎉";
+            corStatus = "#00d2ff"; textoStatus = "CONCLUÍDO! 🎉";
         } else if (diffDays < 0) {
-            corStatus = "#666"; 
-            textoStatus = "PRAZO ENCERRADO";
+            corStatus = "#666"; textoStatus = "PRAZO ENCERRADO";
         } else if (diffDays <= 3) {
-            corStatus = "#ff4444"; 
-            textoStatus = diffDays === 0 ? "ENTREGA HOJE!" : `URGENTE: Faltam ${diffDays} dias`;
+            corStatus = "#ff4444"; textoStatus = diffDays === 0 ? "ENTREGA HOJE!" : `URGENTE: Faltam ${diffDays} dias`;
         } else if (diffDays <= 7) {
-            corStatus = "#ffbb33"; 
-            textoStatus = `ATENÇÃO: Faltam ${diffDays} dias`;
+            corStatus = "#ffbb33"; textoStatus = `ATENÇÃO: Faltam ${diffDays} dias`;
         }
 
         return `
-        <div class="tarefa-item" style="border-left: 5px solid ${corStatus}; opacity: ${t.concluida ? '0.5' : '1'}; transition: 0.3s;">
+        <div class="tarefa-item" style="border-left: 5px solid ${corStatus}; opacity: ${t.concluida ? '0.5' : '1'};">
             <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                <div onclick="alternarConcluida(${t.id})" style="cursor:pointer; flex: 1;">
+                <div style="flex: 1;">
                     <span style="background:var(--primary); font-size:10px; padding:3px 8px; border-radius:5px; font-weight:bold; color:white;">${t.materia}</span>
-                    <b style="display:block; margin-top:8px; font-size:18px; color:white; text-decoration: ${t.concluida ? 'line-through' : 'none'};">
+                    <b onclick="alternarConcluida(${t.id})" style="display:block; margin-top:8px; font-size:18px; color:white; text-decoration: ${t.concluida ? 'line-through' : 'none'}; cursor:pointer;">
                         ${t.nome}
                     </b>
+                    
+                    ${t.descricao ? `
+                        <p onclick="expandirTexto(this)" style="
+                            font-size:13px; 
+                            color:#ddd; 
+                            margin: 8px 0; 
+                            line-height:1.4;
+                            display: -webkit-box;
+                            -webkit-line-clamp: 3;
+                            -webkit-box-orient: vertical;
+                            overflow: hidden;
+                            cursor: pointer;
+                            transition: all 0.3s;
+                        ">${t.descricao}</p>
+                    ` : ''}
+                    
                     <div style="margin-top:5px; font-size:11px; color:#aaa;">Prazo: ${t.dataFim.split('-').reverse().join('/')}</div>
                     <div style="margin-top:5px; color:${corStatus}; font-weight:bold; font-size:12px;">${textoStatus}</div>
                 </div>
@@ -211,4 +229,4 @@ function removerTarefa(id) {
     localStorage.setItem('dt_agenda', JSON.stringify(agenda));
     renderizarCalendario();
     carregarTarefas(dataSelecionada);
-        }
+}
