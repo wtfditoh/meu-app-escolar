@@ -59,7 +59,7 @@ window.carregarTarefas = (filtroData = null) => {
     }
 
     if (tarefas.length === 0) {
-        lista.innerHTML = "<p style='color:#666; text-align:center; padding:30px;'>Nada agendado.</p>";
+        lista.innerHTML = "<p style='color:#666; text-align:center; padding:30px;'>Sem atividades.</p>";
         return;
     }
 
