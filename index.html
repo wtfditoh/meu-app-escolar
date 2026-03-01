@@ -58,5 +58,34 @@
 
     <div id="modal-aviso-container" class="modal-custom">
         <div class="modal-content">
-            <div
-                
+            <div id="aviso-icon" style="margin-bottom:15px;"></div>
+            <h3 id="aviso-titulo"></h3>
+            <p id="aviso-texto" style="margin: 10px 0 20px; color: #888;"></p>
+            <div class="area-botoes-modal">
+                <button onclick="fecharAviso()" class="btn-modal-acao" style="width:100%">Entendido</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-excluir-container" class="modal-custom">
+        <div class="modal-content">
+            <div style="text-align: center;">
+                <i data-lucide="alert-triangle" style="color:#ff4444; width:40px; margin-bottom:10px;"></i>
+            </div>
+            <h3>Apagar Disciplina?</h3>
+            <div class="area-botoes-modal">
+                <button onclick="fecharModalExcluir()" class="btn-modal-voltar">Voltar</button>
+                <button onclick="confirmarExclusao()" class="btn-modal-acao btn-danger-fix">Apagar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="funcoes.js?v=12.0"></script>
+    <script>
+        // Isso garante que os ícones apareçam assim que a página carregar
+        document.addEventListener('DOMContentLoaded', function() {
+            lucide.createIcons();
+        });
+    </script>
+</body>
+</html>
