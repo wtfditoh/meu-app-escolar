@@ -36,13 +36,13 @@ window.buscarDadosNuvem = async function() {
             const snap = await getDocs(q);
             agendaGlobal = [];
             snap.forEach(d => agendaGlobal.push({ id_firebase: d.id, ...d.data() }));
-        } catch (e) { console.error(e); }
+        } catch (e) { console.error("Erro Firebase:", e); }
     }
     window.renderizarCalendario();
     window.carregarTarefas(dataSelecionada);
 };
 
-// --- SUA LÓGICA DE CORES E PRAZOS (VOLTOU!) ---
+// --- RENDERIZAR LISTA COM CORES E PRAZOS ---
 window.carregarTarefas = (filtroData = null) => {
     const lista = document.getElementById('lista-agenda');
     const titulo = document.getElementById('titulo-lista');
@@ -63,7 +63,6 @@ window.carregarTarefas = (filtroData = null) => {
         return;
     }
 
-    // Ordenação: Pendentes primeiro
     tarefas.sort((a, b) => (a.concluida === b.concluida) ? 0 : a.concluida ? 1 : -1);
 
     lista.innerHTML = tarefas.map(t => {
@@ -92,7 +91,7 @@ window.carregarTarefas = (filtroData = null) => {
                     <b onclick="alternarConcluida('${t.id_firebase}', ${t.criadoEm})" style="display:block; margin-top:8px; font-size:18px; color:white; text-decoration: ${t.concluida ? 'line-through' : 'none'}; cursor:pointer;">
                         ${t.nome}
                     </b>
-                    ${t.descricao ? `<p class="tarefa-desc-texto" style="color:#aaa; font-size:13px; margin:8px 0;">${t.descricao}</p>` : ''}
+                    ${t.descricao ? `<p style="color:#aaa; font-size:13px; margin:8px 0;">${t.descricao}</p>` : ''}
                     <div style="font-size:11px; color:#888;">Prazo: ${t.dataFim.split('-').reverse().join('/')}</div>
                     <div style="margin-top:5px; color:${corStatus}; font-weight:bold; font-size:12px;">${textoStatus}</div>
                 </div>
@@ -111,7 +110,7 @@ window.carregarTarefas = (filtroData = null) => {
     lucide.createIcons();
 };
 
-// --- ADICIONAR (COM IMAGEM!) ---
+// --- ADICIONAR TAREFA ---
 window.adicionarTarefa = async function() {
     const nome = document.getElementById('tarefa-nome').value.trim();
     const desc = document.getElementById('tarefa-desc').value.trim();
@@ -119,7 +118,7 @@ window.adicionarTarefa = async function() {
     const dataFim = document.getElementById('tarefa-data-fim').value;
     const materia = document.getElementById('tarefa-materia').value;
 
-    if (!nome || !dataInicio || !dataFim) return alert("Preencha o título e as datas!");
+    if (!nome || !dataInicio || !dataFim) return alert("Preencha os campos obrigatórios!");
 
     const nova = { 
         nome, descricao: desc, dataInicio, dataFim, materia, 
@@ -138,7 +137,28 @@ window.adicionarTarefa = async function() {
     window.buscarDadosNuvem();
 };
 
-// --- CALENDÁRIO ORIGINAL ---
+// --- REMOVER SEM AVISO ---
+window.removerTarefa = async function(idFirebase, idLocal) {
+    if (userType === 'local') {
+        agendaGlobal = agendaGlobal.filter(t => t.criadoEm !== idLocal);
+        localStorage.setItem('dt_agenda', JSON.stringify(agendaGlobal));
+    } else {
+        await deleteDoc(doc(db, "agenda", idFirebase));
+    }
+    window.buscarDadosNuvem();
+};
+
+// --- FECHAR E LIMPAR TUDO ---
+window.fecharModalAgenda = () => { 
+    document.getElementById('modal-agenda').style.display = 'none'; 
+    document.getElementById('tarefa-nome').value = ""; 
+    document.getElementById('tarefa-desc').value = ""; 
+    document.getElementById('tarefa-materia').value = "Geral";
+    document.getElementById('preview-container').innerHTML = "";
+    imagemBase64 = ""; 
+};
+
+// --- RESTANTE DAS FUNÇÕES (CALENDÁRIO E APOIO) ---
 window.renderizarCalendario = function() {
     const grid = document.getElementById('calendar-grid');
     const topoMes = document.getElementById('mes-topo');
@@ -171,7 +191,6 @@ window.renderizarCalendario = function() {
     lucide.createIcons();
 };
 
-// --- FUNÇÕES DE APOIO ---
 window.alternarConcluida = async function(idFirebase, idLocal) {
     if (userType === 'local') {
         const index = agendaGlobal.findIndex(t => t.criadoEm === idLocal);
@@ -186,23 +205,12 @@ window.alternarConcluida = async function(idFirebase, idLocal) {
     window.buscarDadosNuvem();
 };
 
-window.removerTarefa = async function(idFirebase, idLocal) {
-    if (!confirm("Excluir atividade?")) return;
-    if (userType === 'local') {
-        agendaGlobal = agendaGlobal.filter(t => t.criadoEm !== idLocal);
-        localStorage.setItem('dt_agenda', JSON.stringify(agendaGlobal));
-    } else {
-        await deleteDoc(doc(db, "agenda", idFirebase));
-    }
-    window.buscarDadosNuvem();
-};
-
 window.previewImg = (input) => {
     if (input.files && input.files[0]) {
         const reader = new FileReader();
         reader.onload = e => {
             imagemBase64 = e.target.result;
-            document.getElementById('preview-container').innerHTML = `<img src="${imagemBase64}" style="width:100%; border-radius:15px; margin-top:15px; border: 1px solid var(--primary);">`;
+            document.getElementById('preview-container').innerHTML = `<img src="${imagemBase64}" style="width:100%; border-radius:15px; margin-top:15px;">`;
         };
         reader.readAsDataURL(input.files[0]);
     }
@@ -211,8 +219,7 @@ window.previewImg = (input) => {
 window.carregarMateriasNoSelect = function() {
     const select = document.getElementById('tarefa-materia');
     if(!select) return;
-    const materiasSalvas = localStorage.getItem('materias_db') || localStorage.getItem('materias');
-    const materiasDB = JSON.parse(materiasSalvas || '[]');
+    const materiasDB = JSON.parse(localStorage.getItem('materias_db') || localStorage.getItem('materias') || '[]');
     select.innerHTML = '<option value="Geral">Geral / Outros</option>';
     materiasDB.forEach(m => {
         if(m.nome) {
@@ -230,10 +237,4 @@ window.abrirModalAgendaHoje = () => {
     document.getElementById('tarefa-data-inicio').value = dataSelecionada || hoje;
     document.getElementById('tarefa-data-fim').value = dataSelecionada || hoje;
     document.getElementById('modal-agenda').style.display = 'flex'; 
-};
-window.fecharModalAgenda = () => { 
-    document.getElementById('modal-agenda').style.display = 'none'; 
-    imagemBase64 = ""; 
-    document.getElementById('preview-container').innerHTML = "";
-    document.getElementById('tarefa-nome').value = ""; 
 };
