@@ -1,86 +1,77 @@
+/* Cores e Reset */
 :root {
     --primary: #8a2be2;
-    --primary-dark: #6a1b9a;
     --bg: #05050a;
     --card: #121218;
-    --text: #efefef;
+    --text: #eee;
     --border: #252530;
 }
 
 body { 
     background: var(--bg); 
     color: var(--text); 
-    font-family: 'Inter', sans-serif; 
+    font-family: 'Segoe UI', sans-serif; 
     margin: 0; 
-    height: 100vh; 
-    overflow: hidden; 
 }
 
-/* Scrollbar invisível mas funcional */
-::-webkit-scrollbar { width: 0px; }
+/* Fim do fundo branco em inputs e botões */
+input, select, button {
+    background: #000;
+    color: white;
+    border: 1px solid var(--border);
+    outline: none;
+}
 
-/* Botões de Opção do Simulado (Corrigindo o erro do branco) */
+/* Ajuste das Questões (Botões agora são cards) */
 .opcao-btn {
     width: 100%;
     text-align: left;
     padding: 15px;
     margin-top: 10px;
     background: #1a1a25;
-    border: 1px solid var(--border);
-    color: #ddd;
     border-radius: 12px;
     cursor: pointer;
     font-size: 14px;
     transition: 0.3s;
 }
-.opcao-btn:hover { background: #252535; }
 
-/* Ajuste do Chat para Scroll Real */
-.chat-wrapper {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    position: relative;
-}
-
+/* Chat com Scroll Real (Para poderes subir a conversa) */
 #chat-respostas {
     flex: 1;
-    overflow-y: scroll; /* Permite voltar a conversa */
+    overflow-y: auto; /* ATIVA O SCROLL */
     display: flex;
     flex-direction: column;
     gap: 15px;
-    padding: 15px 5px 120px 5px;
-    -webkit-overflow-scrolling: touch;
+    padding: 10px 5px 120px 5px;
 }
 
-/* Botão de Limpar e Histórico */
-.chat-actions {
+.msg-ia { align-self: flex-start; background: #1a1a25; padding: 12px; border-radius: 15px 15px 15px 0; max-width: 85%; border: 1px solid #333; }
+.msg-user { align-self: flex-end; background: var(--primary); padding: 12px; border-radius: 15px 15px 0 15px; max-width: 85%; }
+
+/* Barra de Digitação Fixa */
+.input-chat-container {
+    position: fixed;
+    bottom: 15px;
+    left: 10px;
+    right: 10px;
+    background: #0d0d12;
+    padding: 10px;
+    border-radius: 30px;
+    border: 1px solid var(--border);
     display: flex;
     gap: 10px;
-    padding: 10px;
-    justify-content: flex-end;
 }
 
-.btn-action {
-    background: #1a1a25;
-    color: #888;
-    border: 1px solid var(--border);
-    padding: 5px 12px;
-    border-radius: 20px;
-    font-size: 11px;
-    cursor: pointer;
-}
-
-/* Notificação Toast */
+/* Toast (Aviso de "Digite o assunto") */
 #custom-toast {
     position: fixed;
-    bottom: -100px;
+    top: -100px;
     left: 50%;
     transform: translateX(-50%);
     background: var(--primary);
     color: white;
     padding: 12px 25px;
     border-radius: 30px;
-    z-index: 10000;
-    transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: 0.5s;
+    z-index: 9999;
 }
