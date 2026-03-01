@@ -1,83 +1,63 @@
-/* Estilo específico para a Agenda DT School */
-
-/* Container de preview de imagem */
-#preview-container img {
-    max-height: 200px;
-    object-fit: cover;
-    border: 2px solid var(--primary);
-    box-shadow: 0 4px 15px rgba(138, 43, 226, 0.3);
+/* agenda-estilo.css */
+:root {
+    --primary: #8a2be2;
+    --bg-card: rgba(255, 255, 255, 0.05);
 }
 
-/* Itens da Lista de Agenda */
-.tarefa-item {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 15px;
-    border-radius: 20px;
-    margin-bottom: 15px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    transition: transform 0.2s;
-}
+.bg-dark { background-color: #05050a; color: white; }
 
-.tarefa-item:active {
-    transform: scale(0.98);
-}
-
-/* Informações do texto */
-.tarefa-info b {
-    color: #fff;
-    font-size: 16px;
-    display: block;
-    margin-bottom: 4px;
-}
-
-.tarefa-info span {
-    color: #aaa;
-    font-size: 13px;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-}
-
-/* Badge de Matéria */
-.badge-materia {
-    background: var(--primary);
-    color: white;
-    font-size: 10px;
-    font-weight: bold;
-    padding: 4px 10px;
-    border-radius: 20px;
-    text-transform: uppercase;
-    width: fit-content;
-}
-
-/* Botão de Deletar */
-.btn-delete {
-    background: rgba(255, 68, 68, 0.15);
-    color: #ff4444;
-    border: 1px solid rgba(255, 68, 68, 0.3);
-    width: 40px;
-    height: 40px;
+.btn-anexo {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px dashed rgba(255, 255, 255, 0.3);
+    color: #ccc;
+    padding: 12px;
     border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 8px;
     cursor: pointer;
+    transition: 0.3s;
 }
 
-/* Estilo para as imagens anexadas na lista */
-.img-anexo {
+.btn-anexo:hover { background: rgba(255, 255, 255, 0.15); }
+
+#preview-container img {
     width: 100%;
     border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    margin-top: 5px;
+    margin-top: 10px;
+    border: 1px solid var(--primary);
 }
 
-/* Inputs da Agenda */
-.input-ia[type="date"] {
-    color-scheme: dark; /* Faz o calendário do sistema ficar escuro */
+.tarefa-item {
+    background: var(--bg-card);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 18px;
+    padding: 15px;
+    margin-bottom: 15px;
+    animation: fadeIn 0.4s ease;
+}
+
+.tarefa-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+}
+
+.tarefa-info b { font-size: 17px; color: #fff; display: block; }
+.tarefa-info span { font-size: 13px; color: #888; }
+
+.btn-delete {
+    background: rgba(255, 68, 68, 0.2);
+    color: #ff4444;
+    border: none;
+    padding: 8px;
+    border-radius: 10px;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
