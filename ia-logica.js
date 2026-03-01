@@ -1,36 +1,41 @@
 const API_KEY = "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";
 
-// FUNÇÃO PARA TROCAR AS ABAS CORRETAMENTE
-function aba(n) {
-    // Esconde todos os painéis
-    document.querySelectorAll('.dt-painel').forEach(p => {
-        p.classList.remove('active');
-        p.style.display = 'none';
-    });
-    
-    // Mostra apenas o selecionado
-    const painelAtivo = document.getElementById('painel-' + n);
-    painelAtivo.classList.add('active');
-    painelAtivo.style.display = 'block';
+// GARANTE QUE AS ABAS COMECEM CERTAS
+document.addEventListener('DOMContentLoaded', () => {
+    aba('simulado'); // Começa sempre no simulado
+});
 
-    // Ajusta a cor dos botões da aba
-    document.querySelectorAll('.dt-tab').forEach(t => t.classList.remove('active'));
-    document.getElementById('tab-' + n).classList.add('active');
+function aba(n) {
+    // Esconde os painéis usando display none direto
+    const pSimulado = document.getElementById('painel-simulado');
+    const pChat = document.getElementById('painel-chat');
+
+    if (n === 'simulado') {
+        pSimulado.style.display = 'block';
+        pChat.style.display = 'none';
+        document.getElementById('tab-simulado').classList.add('active');
+        document.getElementById('tab-chat').classList.remove('active');
+    } else {
+        pSimulado.style.display = 'none';
+        pChat.style.display = 'block';
+        document.getElementById('tab-chat').classList.add('active');
+        document.getElementById('tab-simulado').classList.remove('active');
+    }
 }
 
-// FUNÇÃO PARA O MODAL SÓ APARECER QUANDO CHAMADO
+// SÓ MOSTRA O MODAL SE CHAMAR ESSA FUNÇÃO
 function aviso(msg) {
     const m = document.getElementById('custom-modal');
     document.getElementById('modal-text').innerText = msg;
-    m.style.display = 'flex'; // Só aqui ele aparece
+    m.style.display = 'flex';
 }
 
 async function gerar() {
     const tema = document.getElementById('tema').value;
-    if(!tema) return aviso("Por favor, digite o assunto!");
+    if(!tema) return aviso("⚠️ Digite um assunto primeiro!");
     
     const lista = document.getElementById('questoes');
-    lista.innerHTML = "<div class='dt-card'>⏳ O professor está preparando as questões...</div>";
+    lista.innerHTML = "<div class='dt-card'>⏳ Preparando aula e questões...</div>";
 
     try {
         const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -38,7 +43,7 @@ async function gerar() {
             headers: { "Authorization": `Bearer ${API_KEY}`, "Content-Type": "application/json" },
             body: JSON.stringify({
                 model: "llama-3.3-70b-versatile",
-                messages: [{role: "user", content: `Gere 10 questões sobre ${tema}. Retorne APENAS JSON: [{"p":"pergunta","o":["a","b","c","d"],"c":0,"e":"explicação"}]`}]
+                messages: [{role: "user", content: `Gere 10 questões sobre ${tema}. Retorne APENAS JSON: [{"p":"pergunta","o":["a","b","c","d"],"c":0,"e":"mini aula"}]`}]
             })
         });
         
@@ -55,7 +60,6 @@ async function gerar() {
                 const btn = document.createElement('button');
                 btn.className = "dt-opt-btn";
                 btn.innerText = opt;
-                
                 btn.onclick = () => {
                     card.querySelectorAll('.dt-opt-btn').forEach(b => b.disabled = true);
                     if(idx === q.c) {
@@ -65,7 +69,7 @@ async function gerar() {
                         card.querySelectorAll('.dt-opt-btn')[q.c].style.border = "2px solid #28a745";
                     }
                     const aula = document.createElement('div');
-                    aula.className = "dt-mini-aula";
+                    aula.style = "margin-top:15px; padding:10px; border-left:4px solid #8a2be2; background:rgba(255,255,255,0.05); font-size:14px;";
                     aula.innerHTML = `<b>🎓 Mini Aula:</b><br>${q.e}`;
                     card.appendChild(aula);
                 };
@@ -73,5 +77,5 @@ async function gerar() {
             });
             lista.appendChild(card);
         });
-    } catch(e) { lista.innerHTML = "<div class='dt-card'>Erro ao carregar. Tente novamente.</div>"; }
+    } catch(e) { lista.innerHTML = "<div class='dt-card'>Erro. Tente novamente.</div>"; }
 }
