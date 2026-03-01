@@ -1,84 +1,76 @@
-const GROQ_KEY = "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";
+const API_KEY = "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";
 
 document.addEventListener('DOMContentLoaded', () => {
     lucide.createIcons();
-    const history = localStorage.getItem('dt_chat_history');
-    if (history) document.getElementById('dt-chat-box').innerHTML = history;
+    const save = localStorage.getItem('chat_dt');
+    if(save) document.getElementById('chat-box').innerHTML = save;
 });
 
-function clearChat() {
-    if(confirm("Limpar conversa?")) {
-        localStorage.removeItem('dt_chat_history');
-        document.getElementById('dt-chat-box').innerHTML = '<div class="dt-msg-ia">Conversa reiniciada.</div>';
+// FUNÇÃO QUE SEPARA AS TELAS E LIBERA O SCROLL
+function showAba(nome) {
+    // Esconde tudo
+    document.getElementById('aba-simulado').classList.remove('active');
+    document.getElementById('aba-chat').classList.remove('active');
+    document.getElementById('btn-sim').classList.remove('active');
+    document.getElementById('btn-chat').classList.remove('active');
+
+    // Mostra só a escolhida
+    if(nome === 'simulado') {
+        document.getElementById('aba-simulado').classList.add('active');
+        document.getElementById('btn-sim').classList.add('active');
+    } else {
+        document.getElementById('aba-chat').classList.add('active');
+        document.getElementById('btn-chat').classList.add('active');
+        window.scrollTo(0, document.body.scrollHeight);
     }
 }
 
-async function callIA(prompt) {
+async function callIA(p) {
     const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
         method: "POST",
-        headers: { "Authorization": `Bearer ${GROQ_KEY}`, "Content-Type": "application/json" },
-        body: JSON.stringify({ model: "llama-3.3-70b-versatile", messages: [{role:"user", content:prompt}], temperature: 0.6 })
+        headers: { "Authorization": `Bearer ${API_KEY}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ model: "llama-3.3-70b-versatile", messages: [{role:"user", content:p}] })
     });
-    const data = await res.json();
-    return data.choices[0].message.content;
+    const d = await res.json();
+    return d.choices[0].message.content;
 }
 
-async function generateSim() {
-    const subj = document.getElementById('dt-subject').value;
-    const lvl = document.getElementById('dt-level').value;
-    if(!subj) return alert("Digite o assunto!");
+// SIMULADO
+async function gerarSimulado() {
+    const sub = document.getElementById('assunto').value;
+    if(!sub) return alert("Digite o assunto!");
+    
+    const lista = document.getElementById('questoes-lista');
+    lista.innerHTML = "<p>Gerando questões...</p>";
 
-    const btn = document.getElementById('btn-gen');
-    btn.innerText = "Criando..."; btn.disabled = true;
-
+    const prompt = `Gere 10 questões sobre ${sub}. Retorne APENAS JSON: [{"p":"pergunta","o":["a","b","c","d"],"c":0,"e":"explicação"}]`;
+    const texto = await callIA(prompt);
+    
     try {
-        const prompt = `Gere 10 questões de ${lvl} sobre ${subj}. Retorne apenas JSON: [{"p":"pergunta","o":["a","b","c","d"],"c":0,"e":"explicação"}]`;
-        const res = await callIA(prompt);
-        const questions = JSON.parse(res.replace(/```json|```/g, ""));
-        
-        const cont = document.getElementById('dt-questions-container');
-        cont.innerHTML = `<h3 style='color:#8a2be2; margin:20px 0;'>Simulado: ${subj}</h3>`;
-        questions.forEach((q, i) => {
-            const d = document.createElement('div');
-            d.className = "dt-quest-card";
-            d.innerHTML = `<p><b>${i+1}.</b> ${q.p}</p>` + 
-                q.o.map((opt, idx) => `<button class="dt-opt-btn" onclick="validate(this,${idx},${q.c},'${q.e}')">${opt}</button>`).join('');
-            cont.appendChild(d);
+        const questoes = JSON.parse(texto.replace(/```json|```/g, ""));
+        lista.innerHTML = "";
+        questoes.forEach((q, i) => {
+            const div = document.createElement('div');
+            div.className = "card-ia";
+            div.innerHTML = `<p><b>${i+1}.</b> ${q.p}</p>` + 
+                q.o.map((opt, idx) => `<button onclick="this.style.background='${idx==q.c?'#00ff7f':'#ff4444'}'" style="width:100%; padding:15px; margin-top:10px; background:#1a1a25; color:white; border:1px solid #333; border-radius:8px; text-align:left;">${opt}</button>`).join('');
+            lista.appendChild(div);
         });
-    } catch(e) { alert("Erro ao gerar."); }
-    finally { btn.innerText = "Gerar 10 Questões"; btn.disabled = false; }
+    } catch(e) { lista.innerHTML = "Erro ao gerar. Tente novamente."; }
 }
 
-function validate(btn, sel, cor, exp) {
-    const btns = btn.parentElement.querySelectorAll('.dt-opt-btn');
-    btns.forEach(b => b.disabled = true);
-    btn.style.borderColor = (sel === cor) ? "#00ff7f" : "#ff4444";
-    btns[cor].style.borderColor = "#00ff7f";
-    const feedback = document.createElement('p');
-    feedback.style = "font-size:12px; color:#888; margin-top:10px;";
-    feedback.innerHTML = `<b>Resposta:</b> ${exp}`;
-    btn.parentElement.appendChild(feedback);
-}
-
-async function sendToIA() {
-    const input = document.getElementById('dt-chat-input');
-    const box = document.getElementById('dt-chat-box');
+// CHAT
+async function enviarMsg() {
+    const input = document.getElementById('chat-in');
+    const box = document.getElementById('chat-box');
     if(!input.value) return;
 
     const val = input.value;
     input.value = "";
-    box.innerHTML += `<div class="dt-msg-user">${val}</div>`;
-    box.scrollTop = box.scrollHeight;
-
-    const res = await callIA(`Explique para um estudante: ${val}`);
-    box.innerHTML += `<div class="dt-msg-ia">${res}</div>`;
-    box.scrollTop = box.scrollHeight;
-    localStorage.setItem('dt_chat_history', box.innerHTML);
-}
-
-function switchTab(aba) {
-    document.getElementById('sec-sim').classList.toggle('active', aba === 'sim');
-    document.getElementById('sec-chat').classList.toggle('active', aba === 'chat');
-    document.getElementById('tab-sim').classList.toggle('active', aba === 'sim');
-    document.getElementById('tab-chat').classList.toggle('active', aba === 'chat');
+    box.innerHTML += `<div class="bolha user">${val}</div>`;
+    
+    const r = await callIA(`Responda curto: ${val}`);
+    box.innerHTML += `<div class="bolha ia">${r}</div>`;
+    localStorage.setItem('chat_dt', box.innerHTML);
+    window.scrollTo(0, document.body.scrollHeight);
 }
