@@ -10,20 +10,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function carregarMateriasNoSelect() {
     const select = document.getElementById('tarefa-materia');
-    // Pegando as matérias que você salvou no banco das Notas
-    const materiasDB = JSON.parse(localStorage.getItem('materias_db') || '[]');
     
-    // Limpamos o select e colocamos a opção padrão
-    select.innerHTML = '<option value="Geral">Geral / Outros</option>';
+    // Tenta buscar por 'materias_db' ou apenas 'materias' para garantir sincronia
+    let materiasSalvas = localStorage.getItem('materias_db') || localStorage.getItem('materias');
+    const materiasDB = JSON.parse(materiasSalvas || '[]');
     
-    // Adicionamos cada matéria salva
-    if (materiasDB.length > 0) {
+    select.innerHTML = ""; // Limpa o select
+    
+    // 1. Sempre adiciona a opção padrão
+    const optGeral = document.createElement('option');
+    optGeral.value = "Geral";
+    optGeral.textContent = "Geral / Outros";
+    select.appendChild(optGeral);
+    
+    // 2. Se houver matérias nas Notas, adiciona elas
+    if (materiasDB && materiasDB.length > 0) {
         materiasDB.forEach(m => {
-            const opt = document.createElement('option');
-            opt.value = m.nome;
-            opt.textContent = m.nome;
-            select.appendChild(opt);
+            if(m.nome) { // Garante que a matéria tem um nome
+                const option = document.createElement('option');
+                option.value = m.nome;
+                option.textContent = m.nome;
+                select.appendChild(option);
+            }
         });
+    } else {
+        // Se não encontrar nada, avisa para criar na home
+        const optAviso = document.createElement('option');
+        optAviso.textContent = "Nenhuma matéria encontrada";
+        optAviso.disabled = true;
+        select.appendChild(optAviso);
     }
 }
 
@@ -74,19 +89,21 @@ function mudarMes(valor) {
 function abrirModalAgendaHoje() {
     const dataAlvo = dataSelecionada || new Date().toISOString().split('T')[0];
     document.getElementById('tarefa-data-input').value = dataAlvo;
-    carregarMateriasNoSelect(); // Recarrega para garantir que as novas matérias apareçam
+    carregarMateriasNoSelect(); // Atualiza as matérias ao abrir
     document.getElementById('modal-agenda').style.display = 'flex';
 }
 
 function fecharModalAgenda() {
     document.getElementById('modal-agenda').style.display = 'none';
+    document.getElementById('preview-container').innerHTML = "";
+    imagemBase64 = "";
 }
 
 function previewImg(input) {
     const reader = new FileReader();
     reader.onload = e => {
         imagemBase64 = e.target.result;
-        document.getElementById('preview-container').innerHTML = `<img src="${imagemBase64}" style="width:100%; border-radius:15px; margin-top:15px;">`;
+        document.getElementById('preview-container').innerHTML = `<img src="${imagemBase64}" style="width:100%; border-radius:15px; margin-top:15px; border: 1px solid var(--primary);">`;
     };
     reader.readAsDataURL(input.files[0]);
 }
@@ -97,7 +114,6 @@ function adicionarTarefa() {
     const data = document.getElementById('tarefa-data-input').value;
     const materia = document.getElementById('tarefa-materia').value;
 
-    // Lógica de aviso sem Alert do Navegador
     if (!nome || !data) {
         const textoAntigo = btnSalvar.innerText;
         btnSalvar.innerText = "Preencha Título e Data!";
@@ -115,10 +131,7 @@ function adicionarTarefa() {
     agenda.push(nova);
     localStorage.setItem('dt_agenda', JSON.stringify(agenda));
 
-    // Resetar campos
     document.getElementById('tarefa-nome').value = "";
-    imagemBase64 = "";
-    document.getElementById('preview-container').innerHTML = "";
     fecharModalAgenda();
     renderizarCalendario();
     carregarTarefas(data);
@@ -131,13 +144,13 @@ function carregarTarefas(filtroData = null) {
     
     if (filtroData && filtroData !== "") {
         agenda = agenda.filter(t => t.data === filtroData);
-        titulo.innerText = "Dia " + filtroData.split('-').reverse().join('/');
+        titulo.innerText = "Compromissos: " + filtroData.split('-').reverse().join('/');
     } else {
         titulo.innerText = "Todos os Compromissos";
     }
 
     if (agenda.length === 0) {
-        lista.innerHTML = "<p style='color:#666; text-align:center; padding:30px;'>Sem atividades para este dia.</p>";
+        lista.innerHTML = "<p style='color:#666; text-align:center; padding:30px;'>Nenhuma atividade encontrada.</p>";
         return;
     }
 
@@ -147,13 +160,15 @@ function carregarTarefas(filtroData = null) {
         <div class="tarefa-item">
             <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                 <div>
-                    <span style="background:var(--primary); font-size:10px; padding:3px 8px; border-radius:5px; font-weight:bold;">${t.materia}</span>
-                    <b style="display:block; margin-top:5px; font-size:18px;">${t.nome}</b>
-                    <small style="color:#888;">${t.data.split('-').reverse().join('/')}</small>
+                    <span style="background:var(--primary); font-size:10px; padding:3px 8px; border-radius:5px; font-weight:bold; color:white;">${t.materia}</span>
+                    <b style="display:block; margin-top:8px; font-size:18px; color:white;">${t.nome}</b>
+                    <small style="color:#aaa;">${t.data.split('-').reverse().join('/')}</small>
                 </div>
-                <button onclick="removerTarefa(${t.id})" style="background:none; border:none; color:#ff4444; padding:10px;"><i data-lucide="trash-2"></i></button>
+                <button onclick="removerTarefa(${t.id})" style="background:rgba(255,68,68,0.1); border:none; color:#ff4444; padding:8px; border-radius:10px;">
+                    <i data-lucide="trash-2" style="width:18px;"></i>
+                </button>
             </div>
-            ${t.imagem ? `<img src="${t.imagem}" style="width:100%; border-radius:15px; margin-top:15px;">` : ''}
+            ${t.imagem ? `<img src="${t.imagem}" style="width:100%; border-radius:15px; margin-top:15px; border: 1px solid rgba(255,255,255,0.1);">` : ''}
         </div>
     `).join('');
     lucide.createIcons();
