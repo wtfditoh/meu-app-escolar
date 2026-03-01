@@ -1,11 +1,36 @@
 const API_KEY = "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";
 
+// FUNÇÃO PARA TROCAR AS ABAS CORRETAMENTE
+function aba(n) {
+    // Esconde todos os painéis
+    document.querySelectorAll('.dt-painel').forEach(p => {
+        p.classList.remove('active');
+        p.style.display = 'none';
+    });
+    
+    // Mostra apenas o selecionado
+    const painelAtivo = document.getElementById('painel-' + n);
+    painelAtivo.classList.add('active');
+    painelAtivo.style.display = 'block';
+
+    // Ajusta a cor dos botões da aba
+    document.querySelectorAll('.dt-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('tab-' + n).classList.add('active');
+}
+
+// FUNÇÃO PARA O MODAL SÓ APARECER QUANDO CHAMADO
+function aviso(msg) {
+    const m = document.getElementById('custom-modal');
+    document.getElementById('modal-text').innerText = msg;
+    m.style.display = 'flex'; // Só aqui ele aparece
+}
+
 async function gerar() {
     const tema = document.getElementById('tema').value;
-    if(!tema) return alert("Digite o assunto!");
+    if(!tema) return aviso("Por favor, digite o assunto!");
     
     const lista = document.getElementById('questoes');
-    lista.innerHTML = "<div class='dt-card'>⏳ Gerando simulado com mini aula...</div>";
+    lista.innerHTML = "<div class='dt-card'>⏳ O professor está preparando as questões...</div>";
 
     try {
         const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -33,19 +58,12 @@ async function gerar() {
                 
                 btn.onclick = () => {
                     card.querySelectorAll('.dt-opt-btn').forEach(b => b.disabled = true);
-                    
-                    // FORÇANDO A COR DIRETAMENTE NO ELEMENTO
                     if(idx === q.c) {
                         btn.style.setProperty('background-color', '#28a745', 'important');
-                        btn.style.setProperty('color', 'white', 'important');
                     } else {
                         btn.style.setProperty('background-color', '#dc3545', 'important');
-                        btn.style.setProperty('color', 'white', 'important');
-                        // Destaca a correta
                         card.querySelectorAll('.dt-opt-btn')[q.c].style.border = "2px solid #28a745";
                     }
-
-                    // EXIBIR MINI AULA
                     const aula = document.createElement('div');
                     aula.className = "dt-mini-aula";
                     aula.innerHTML = `<b>🎓 Mini Aula:</b><br>${q.e}`;
@@ -55,12 +73,5 @@ async function gerar() {
             });
             lista.appendChild(card);
         });
-    } catch(e) { lista.innerHTML = "<div class='dt-card'>Erro ao carregar questões.</div>"; }
-}
-
-function aba(n) {
-    document.querySelectorAll('.dt-painel').forEach(p => p.style.display = 'none');
-    document.getElementById('painel-' + n).style.display = 'block';
-    document.querySelectorAll('.dt-tab').forEach(t => t.classList.remove('active'));
-    document.getElementById('tab-' + n).classList.add('active');
+    } catch(e) { lista.innerHTML = "<div class='dt-card'>Erro ao carregar. Tente novamente.</div>"; }
 }
