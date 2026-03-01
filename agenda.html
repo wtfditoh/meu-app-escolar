@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Agenda - DT School</title>
+    <title>Agenda DT School</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="stylesheet" href="estilo.css?v=12.0">
     <link rel="stylesheet" href="agenda-estilo.css">
@@ -13,7 +13,7 @@
         <button onclick="window.location.href='index.html'" class="btn-icon">
             <i data-lucide="arrow-left"></i>
         </button>
-        <h1 id="mes-topo" class="topo-compacto">Agenda</h1>
+        <h1 id="mes-topo" class="topo-compacto">Janeiro 2026</h1>
         <div style="width: 38px;"></div>
     </header>
 
@@ -33,21 +33,17 @@
     </main>
 
     <button class="fab-button" onclick="abrirModalAgendaHoje()">
-        <i data-lucide="plus" style="width: 30px; height: 30px;"></i>
+        <i data-lucide="plus"></i>
     </button>
 
-    <div id="modal-agenda" class="modal" style="display: none;">
+    <div id="modal-agenda" class="modal">
         <div class="modal-content glass">
             <h3 style="color: var(--primary); margin-bottom: 20px;">Novo Compromisso</h3>
             
             <input type="text" id="tarefa-nome" placeholder="Título da atividade" class="input-ia">
             
             <select id="tarefa-materia" class="input-ia">
-                <option value="Geral">Escolha a Matéria...</option>
-                <option value="Matemática">Matemática</option>
-                <option value="Português">Português</option>
-                <option value="Biologia">Biologia</option>
-                <option value="História">História</option>
+                <option value="Geral">Carregando matérias...</option>
             </select>
 
             <input type="date" id="tarefa-data-input" class="input-ia">
