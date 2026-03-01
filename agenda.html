@@ -3,26 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Minha Agenda</title>
+    <title>Agenda - DT School</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="stylesheet" href="estilo.css?v=12.0">
     <link rel="stylesheet" href="agenda-estilo.css">
 </head>
 <body class="bg-dark">
     <header class="glass-header">
-        <button onclick="window.location.href='index.html'" class="btn-icon"><i data-lucide="arrow-left"></i></button>
-        <h1 id="mes-atual" class="topo-compacto">Março 2026</h1>
-        <button onclick="abrirModalAgendaHoje()" class="btn-add-main">+</button>
+        <button onclick="window.location.href='index.html'" class="btn-icon">
+            <i data-lucide="arrow-left"></i>
+        </button>
+        <h1 id="mes-topo" class="topo-compacto">Carregando...</h1>
+        <div style="width: 38px;"></div>
     </header>
 
     <main class="container-agenda">
         <div class="calendar-card">
             <div class="calendar-nav">
-                <button onclick="mudarMes(-1)"><i data-lucide="chevron-left"></i></button>
-                <span id="label-mes">Março</span>
-                <button onclick="mudarMes(1)"><i data-lucide="chevron-right"></i></button>
+                <button onclick="mudarMes(-1)" class="btn-nav-clean"><i data-lucide="chevron-left"></i></button>
+                <div id="calendar-grid" class="calendar-grid"></div>
+                <button onclick="mudarMes(1)" class="btn-nav-clean"><i data-lucide="chevron-right"></i></button>
             </div>
-            <div id="calendar-grid" class="calendar-grid"></div>
         </div>
 
         <div class="agenda-section">
@@ -31,27 +32,36 @@
         </div>
     </main>
 
-    <div id="modal-agenda" class="modal">
-        <div class="modal-content glass">
-            <h3 id="modal-data-titulo">Nova Atividade</h3>
-            <input type="text" id="tarefa-nome" placeholder="Título" class="input-ia">
+    <button class="fab-button" onclick="abrirModalAgendaHoje()">
+        <i data-lucide="plus"></i>
+    </button>
+
+    <div id="modal-agenda" class="modal" style="display: none; align-items: center; justify-content: center;">
+        <div class="modal-content glass" style="width: 90%; max-width: 400px;">
+            <h3 id="modal-data-titulo" style="color: var(--primary); margin-bottom: 15px;">Novo Compromisso</h3>
+            
+            <input type="text" id="tarefa-nome" placeholder="Título da atividade" class="input-ia">
+            
             <select id="tarefa-materia" class="input-ia">
                 <option value="Geral">Escolha a Matéria...</option>
                 <option value="Matemática">Matemática</option>
                 <option value="Português">Português</option>
+                <option value="Biologia">Biologia</option>
                 <option value="História">História</option>
             </select>
+
             <input type="date" id="tarefa-data-input" class="input-ia">
             
-            <label class="btn-anexo" for="tarefa-img">
+            <label class="btn-anexo" for="tarefa-img" style="display: flex; align-items: center; justify-content: center; gap: 8px; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; border: 1px dashed #444; margin: 10px 0;">
                 <i data-lucide="image"></i> Anexar Foto
                 <input type="file" id="tarefa-img" accept="image/*" style="display: none;" onchange="previewImg(this)">
             </label>
+            
             <div id="preview-container"></div>
 
-            <div class="area-botoes-modal">
-                <button onclick="fecharModalAgenda()" class="btn-modal-voltar">Sair</button>
-                <button onclick="adicionarTarefa()" class="btn-modal-acao">Salvar</button>
+            <div class="area-botoes-modal" style="display: flex; gap: 10px; margin-top: 20px;">
+                <button onclick="fecharModalAgenda()" class="btn-modal-voltar" style="flex: 1;">Sair</button>
+                <button onclick="adicionarTarefa()" class="btn-modal-acao" style="flex: 1;">Salvar</button>
             </div>
         </div>
     </div>
