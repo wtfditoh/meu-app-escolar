@@ -6,41 +6,52 @@
     <title>DT School - IA</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="stylesheet" href="estilo.css?v=12.0">
-    <link rel="stylesheet" href="ia-estilo.css">
+    <link rel="stylesheet" href="ia-estilo.css?v=3.0">
 </head>
-<body style="background: #05050a;">
+<body style="background: #05050a; overflow-x: hidden;">
     <header class="glass-header">
         <button onclick="window.location.href='index.html'" class="btn-icon"><i data-lucide="arrow-left"></i></button>
         <h1 class="topo-compacto">DT Inteligência</h1>
         <div style="width: 38px;"></div>
     </header>
 
+    <div class="abas-container">
+        <button id="tab-simulado" class="tab-btn active" onclick="trocarAba('simulado')">Simulado</button>
+        <button id="tab-chat" class="tab-btn" onclick="trocarAba('chat')">Tira-Dúvidas</button>
+    </div>
+
     <main class="container" style="padding: 15px;">
-        <div class="materia-card">
-            <h3 style="margin-bottom: 12px; font-size: 15px; color: var(--primary);">Simulado IA</h3>
-            <input type="text" id="assunto-ia" placeholder="Assunto (ex: Egito)" class="input-ia">
-            <select id="nivel-ia" class="input-ia">
-                <option value="2º ano EM">2º ano EM</option>
-                <option value="3º ano EM">3º ano EM</option>
-            </select>
-            <button onclick="gerarQuestoes()" id="btn-gerar" class="btn-modal-acao" style="width: 100%;">Gerar Questões</button>
-        </div>
-
-        <div class="materia-card" style="margin-top: 20px;">
-            <h3 style="margin-bottom: 12px; font-size: 15px; color: #00ff7f;">Tira-Dúvidas</h3>
-            <div id="chat-respostas" style="max-height: 200px; overflow-y: auto; margin-bottom: 10px; font-size: 13px; color: #ccc;"></div>
-            <div style="display: flex; gap: 8px;">
-                <input type="text" id="pergunta-ia" placeholder="Manda sua dúvida..." class="input-ia" style="margin-bottom:0;">
-                <button onclick="perguntarIA()" id="btn-perguntar" class="btn-add-main" style="width: 50px; height: 45px;">
-                    <i data-lucide="send" style="width: 18px;"></i>
-                </button>
+        
+        <section id="secao-simulado" class="aba-conteudo active">
+            <div class="materia-card">
+                <h3 class="titulo-ia">Gerar Questões</h3>
+                <input type="text" id="assunto-ia" placeholder="Ex: Revolução Industrial" class="input-ia">
+                <select id="nivel-ia" class="input-ia">
+                    <option value="2º ano EM">2º ano EM</option>
+                    <option value="3º ano EM">3º ano EM</option>
+                </select>
+                <button onclick="gerarQuestoes()" id="btn-gerar" class="btn-modal-acao" style="width: 100%;">Começar Teste</button>
             </div>
-        </div>
+            <div id="container-questoes"></div>
+        </section>
 
-        <div id="container-questoes"></div>
+        <section id="secao-chat" class="aba-conteudo">
+            <div class="chat-wrapper">
+                <div id="chat-respostas" class="chat-box">
+                    <div class="msg-ia">Olá! O que você quer aprender hoje?</div>
+                </div>
+                <div class="input-chat-container">
+                    <input type="text" id="pergunta-ia" placeholder="Sua dúvida..." onkeypress="if(event.key==='Enter') perguntarIA()">
+                    <button onclick="perguntarIA()" id="btn-perguntar" class="btn-send">
+                        <i data-lucide="send"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
     </main>
 
-    <script src="ia-logica.js?v=2.0"></script>
+    <script src="ia-logica.js?v=3.0"></script>
     <script>lucide.createIcons();</script>
 </body>
 </html>
