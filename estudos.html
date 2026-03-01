@@ -9,56 +9,60 @@
 </head>
 <body>
 
-    <div id="menu-lateral" class="dt-sidebar">
-        <button class="dt-close-menu" onclick="toggleMenu()">×</button>
-        <div class="dt-menu-items">
-            <button onclick="alternarAba('simulado')"><i data-lucide="graduation-cap"></i> Simulado</button>
-            <button onclick="alternarAba('chat')"><i data-lucide="message-square"></i> Tira-Dúvidas</button>
-            <button onclick="abrirNotas()"><i data-lucide="book-open"></i> Minhas Notas</button>
-        </div>
-    </div>
-
     <header class="dt-header">
-        <button class="dt-menu-btn" onclick="toggleMenu()">
+        <button class="dt-menu-btn" onclick="abrirSeuMenuLateral()">
             <i data-lucide="menu"></i>
         </button>
-        <div class="dt-logo">DT Educator</div>
-        <button class="dt-btn-lixeira" onclick="limparTudo()">
+        <div class="dt-logo" id="header-titulo">Simulado IA</div>
+        <button class="dt-btn-lixeira" onclick="abrirModalLixeira()">
             <i data-lucide="trash-2"></i>
         </button>
     </header>
 
     <nav class="dt-nav-tabs">
-        <button id="tab-simulado" class="dt-tab-button active" onclick="alternarAba('simulado')">Simulado</button>
-        <button id="tab-chat" class="dt-tab-button" onclick="alternarAba('chat')">Tira-Dúvidas</button>
+        <button id="tab-simulado" class="dt-tab-button active" onclick="trocarAba('simulado')">Simulado</button>
+        <button id="tab-chat" class="dt-tab-button" onclick="trocarAba('chat')">Tira-Dúvidas</button>
     </nav>
 
-    <main class="dt-main-content">
-        <section id="painel-simulado" class="dt-section active">
-            <div class="dt-card-input">
-                <input type="text" id="campo-tema" placeholder="Qual o assunto hoje?" class="dt-input-dark">
-                <select id="campo-nivel" class="dt-input-dark">
-                    <option value="Medio">Ensino Médio</option>
-                    <option value="Superior">Ensino Superior</option>
-                </select>
-                <button class="dt-btn-principal" onclick="gerarSimulado()">GERAR QUESTÕES</button>
+    <main class="dt-main">
+        <section id="painel-simulado" class="dt-aba active">
+            <div class="dt-card-form">
+                <label>Qual o tema do estudo?</label>
+                <input type="text" id="campo-tema" placeholder="Ex: Fotossíntese, Revolução Francesa..." class="dt-input">
+                <button class="dt-btn-gerar" onclick="gerarSimulado()">GERAR QUESTÕES</button>
             </div>
             <div id="container-questoes"></div>
         </section>
 
-        <section id="painel-chat" class="dt-section">
-            <div id="chat-box" class="dt-chat-container"></div>
+        <section id="painel-chat" class="dt-aba">
+            <div id="chat-box" class="dt-chat-scroll">
+                <div class="dt-bolha ia">Olá! Digite qualquer dúvida acadêmica abaixo que eu te ajudo agora.</div>
+            </div>
             <div class="dt-chat-input-area">
-                <input type="text" id="chat-input" placeholder="Dúvida...">
-                <button onclick="enviarMensagem()" class="dt-btn-send"><i data-lucide="send"></i></button>
+                <input type="text" id="chat-input" placeholder="Sua dúvida aqui...">
+                <button onclick="enviarMensagem()" class="dt-btn-send">
+                    <i data-lucide="send"></i>
+                </button>
             </div>
         </section>
     </main>
 
+    <div id="modal-lixeira" class="dt-modal-overlay">
+        <div class="dt-modal-box">
+            <div style="color:#ff4444; margin-bottom:15px"><i data-lucide="trash-2" size="48"></i></div>
+            <h3>Limpar tudo?</h3>
+            <p>Isso apagará o histórico de questões e as conversas do chat.</p>
+            <div class="dt-modal-footer">
+                <button class="dt-btn-cancelar" onclick="fecharModalLixeira()">Cancelar</button>
+                <button class="dt-btn-confirmar" onclick="confirmarLimpeza()">Sim, Limpar</button>
+            </div>
+        </div>
+    </div>
+
     <div id="modal-aviso" class="dt-modal-overlay">
         <div class="dt-modal-box">
-            <p id="modal-texto-msg"></p>
-            <button class="dt-btn-principal" onclick="fecharModal()">OK</button>
+            <p id="txt-aviso"></p>
+            <button class="dt-btn-gerar" onclick="fecharAviso()" style="margin-top:15px">OK</button>
         </div>
     </div>
 
