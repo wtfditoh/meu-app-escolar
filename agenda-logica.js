@@ -8,21 +8,26 @@ document.addEventListener('DOMContentLoaded', () => {
     carregarTarefas();
 });
 
-// BUSCA AS MATÉRIAS REAIS DO SEU BANCO DE DADOS
 function carregarMateriasNoSelect() {
     const select = document.getElementById('tarefa-materia');
     const materiasDB = JSON.parse(localStorage.getItem('materias_db') || '[]');
     
-    select.innerHTML = '<option value="Geral">Geral / Outros</option>';
+    // Limpa tudo antes de preencher
+    select.innerHTML = "";
     
-    if (materiasDB.length > 0) {
-        materiasDB.forEach(m => {
-            const option = document.createElement('option');
-            option.value = m.nome;
-            option.text = m.nome;
-            select.add(option);
-        });
-    }
+    // Adiciona "Geral / Outros" como primeira opção
+    const optGeral = document.createElement('option');
+    optGeral.value = "Geral";
+    optGeral.textContent = "Geral / Outros";
+    select.appendChild(optGeral);
+    
+    // Adiciona as matérias das notas
+    materiasDB.forEach(m => {
+        const option = document.createElement('option');
+        option.value = m.nome;
+        option.textContent = m.nome;
+        select.appendChild(option);
+    });
 }
 
 function renderizarCalendario() {
@@ -73,7 +78,7 @@ function abrirModalAgendaHoje() {
     const dataAlvo = dataSelecionada || new Date().toISOString().split('T')[0];
     document.getElementById('tarefa-data-input').value = dataAlvo;
     document.getElementById('modal-agenda').style.display = 'flex';
-    carregarMateriasNoSelect(); // Atualiza a lista sempre que abrir
+    carregarMateriasNoSelect(); 
 }
 
 function fecharModalAgenda() {
@@ -84,26 +89,27 @@ function previewImg(input) {
     const reader = new FileReader();
     reader.onload = e => {
         imagemBase64 = e.target.result;
-        document.getElementById('preview-container').innerHTML = `<img src="${imagemBase64}" style="width:100%; border-radius:15px; margin-top:15px; border:1px solid var(--primary);">`;
+        document.getElementById('preview-container').innerHTML = `<img src="${imagemBase64}" style="width:100%; border-radius:15px; margin-top:15px;">`;
     };
     reader.readAsDataURL(input.files[0]);
 }
 
-// SALVAR COM AVISO NO PRÓPRIO BOTÃO (SEM ALERT)
 function adicionarTarefa() {
-    const btnSalvar = document.querySelector('.btn-modal-acao');
+    const btnSalvar = document.getElementById('btn-salvar-agenda');
     const nome = document.getElementById('tarefa-nome').value;
     const data = document.getElementById('tarefa-data-input').value;
     const materia = document.getElementById('tarefa-materia').value;
 
+    // AVISO NO BOTÃO (SEM ALERT DO CHROME)
     if (!nome || !data) {
-        const originalText = btnSalvar.innerText;
-        btnSalvar.innerText = "Falta o título ou data!";
+        const textoOriginal = btnSalvar.innerText;
+        btnSalvar.innerText = "Preencha Título e Data!";
         btnSalvar.style.background = "#ff4444";
+        
         setTimeout(() => {
-            btnSalvar.innerText = originalText;
-            btnSalvar.style.background = "var(--primary)";
-        }, 2000);
+            btnSalvar.innerText = textoOriginal;
+            btnSalvar.style.background = "#8a2be2";
+        }, 2500);
         return;
     }
 
@@ -133,7 +139,7 @@ function carregarTarefas(filtroData = null) {
     }
 
     if (agenda.length === 0) {
-        lista.innerHTML = "<p style='color:#666; text-align:center; padding:30px;'>Nenhuma atividade agendada.</p>";
+        lista.innerHTML = "<p style='color:#666; text-align:center; padding:30px;'>Nenhuma atividade.</p>";
         return;
     }
 
@@ -144,12 +150,12 @@ function carregarTarefas(filtroData = null) {
             <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                 <div>
                     <span style="background:var(--primary); font-size:10px; padding:3px 8px; border-radius:5px; font-weight:bold;">${t.materia}</span>
-                    <b style="display:block; margin-top:5px; font-size:18px;">${t.nome}</b>
+                    <b style="display:block; margin-top:5px; font-size:17px;">${t.nome}</b>
                     <small style="color:#888;">${t.data.split('-').reverse().join('/')}</small>
                 </div>
                 <button onclick="removerTarefa(${t.id})" style="background:none; border:none; color:#ff4444; padding:10px;"><i data-lucide="trash-2"></i></button>
             </div>
-            ${t.imagem ? `<img src="${t.imagem}" style="width:100%; border-radius:15px; margin-top:15px; border:1px solid rgba(255,255,255,0.1);">` : ''}
+            ${t.imagem ? `<img src="${t.imagem}" style="width:100%; border-radius:15px; margin-top:15px;">` : ''}
         </div>
     `).join('');
     lucide.createIcons();
