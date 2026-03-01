@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DT Educator - Premium</title>
+    <title>DT Educator</title>
     <link rel="stylesheet" href="ia-estilo.css">
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body>
+<body style="background: #05020a !important;">
 
     <header class="dt-header">
         <button class="dt-menu-btn" onclick="abrirSeuMenuLateral()">
@@ -24,45 +24,38 @@
         <button id="tab-chat" class="dt-tab-button" onclick="trocarAba('chat')">Tira-Dúvidas</button>
     </nav>
 
-    <main class="dt-main">
+    <main>
         <section id="painel-simulado" class="dt-aba active">
             <div class="dt-card-form">
-                <label>Qual o tema do estudo?</label>
-                <input type="text" id="campo-tema" placeholder="Ex: Fotossíntese, Revolução Francesa..." class="dt-input">
+                <input type="text" id="campo-tema" placeholder="Tema do simulado..." class="dt-input">
                 <button class="dt-btn-gerar" onclick="gerarSimulado()">GERAR QUESTÕES</button>
             </div>
             <div id="container-questoes"></div>
         </section>
 
         <section id="painel-chat" class="dt-aba">
-            <div id="chat-box" class="dt-chat-scroll">
-                <div class="dt-bolha ia">Olá! Digite qualquer dúvida acadêmica abaixo que eu te ajudo agora.</div>
-            </div>
+            <div id="chat-box" class="dt-chat-scroll"></div>
             <div class="dt-chat-input-area">
-                <input type="text" id="chat-input" placeholder="Sua dúvida aqui...">
-                <button onclick="enviarMensagem()" class="dt-btn-send">
-                    <i data-lucide="send"></i>
-                </button>
+                <input type="text" id="chat-input" placeholder="Sua dúvida...">
+                <button onclick="enviarMensagem()" class="dt-btn-send"><i data-lucide="send"></i></button>
             </div>
         </section>
     </main>
 
-    <div id="modal-lixeira" class="dt-modal-overlay">
+    <div id="modal-lixeira" class="dt-modal-overlay" style="display: none;">
         <div class="dt-modal-box">
-            <div style="color:#ff4444; margin-bottom:15px"><i data-lucide="trash-2" size="48"></i></div>
-            <h3>Limpar tudo?</h3>
-            <p>Isso apagará o histórico de questões e as conversas do chat.</p>
+            <h3>Limpar Histórico?</h3>
             <div class="dt-modal-footer">
-                <button class="dt-btn-cancelar" onclick="fecharModalLixeira()">Cancelar</button>
-                <button class="dt-btn-confirmar" onclick="confirmarLimpeza()">Sim, Limpar</button>
+                <button class="dt-btn-cancelar" onclick="fecharModalLixeira()">Sair</button>
+                <button class="dt-btn-confirmar" onclick="confirmarLimpeza()">Limpar</button>
             </div>
         </div>
     </div>
 
-    <div id="modal-aviso" class="dt-modal-overlay">
+    <div id="modal-aviso" class="dt-modal-overlay" style="display: none;">
         <div class="dt-modal-box">
             <p id="txt-aviso"></p>
-            <button class="dt-btn-gerar" onclick="fecharAviso()" style="margin-top:15px">OK</button>
+            <button class="dt-btn-gerar" onclick="fecharAviso()">OK</button>
         </div>
     </div>
 
