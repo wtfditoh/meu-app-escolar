@@ -2,9 +2,7 @@
 <html lang="pt-br">
 <head>
     <script>
-    // Verifica se existe um número ou "visitante" salvo
     if (!localStorage.getItem('dt_user_phone')) {
-        // Se não tiver nada, manda para o login automaticamente
         window.location.href = 'login.html';
     }
     </script>
@@ -35,8 +33,7 @@
 
         <div class="agenda-section">
             <h3 class="section-title" id="titulo-lista">Compromissos</h3>
-            <div id="lista-agenda"></div>
-        </div>
+            <div id="lista-agenda"></div> </div>
     </main>
 
     <button class="fab-button" onclick="abrirModalAgendaHoje()">
@@ -46,10 +43,8 @@
     <div id="modal-agenda" class="modal">
         <div class="modal-content glass">
             <h3 style="color: var(--primary); margin-bottom: 20px;">Nova Atividade</h3>
-            
-            <input type="text" id="tarefa-nome" placeholder="Título (ex: Atividade de Port)" class="input-ia">
-            
-            <textarea id="tarefa-desc" placeholder="Detalhes (ex: Página 62, exercícios 1 ao 5)" class="input-ia" style="height: 80px; resize: none; font-family: inherit;"></textarea>
+            <input type="text" id="tarefa-nome" placeholder="Título" class="input-ia">
+            <textarea id="tarefa-desc" placeholder="Detalhes" class="input-ia" style="height: 80px; resize: none;"></textarea>
             
             <select id="tarefa-materia" class="input-ia" style="background-color: #1a1a2e !important; color: white !important;">
                 <option value="Geral">Geral / Outros</option>
@@ -57,20 +52,19 @@
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                 <div>
-                    <label style="font-size: 10px; color: var(--primary); margin-left: 5px;">INÍCIO</label>
+                    <label style="font-size: 10px; color: var(--primary);">INÍCIO</label>
                     <input type="date" id="tarefa-data-inicio" class="input-ia">
                 </div>
                 <div>
-                    <label style="font-size: 10px; color: #ff4444; margin-left: 5px;">PRAZO FINAL</label>
+                    <label style="font-size: 10px; color: #ff4444;">PRAZO FINAL</label>
                     <input type="date" id="tarefa-data-fim" class="input-ia">
                 </div>
             </div>
             
             <label class="btn-anexo" for="tarefa-img">
-                <i data-lucide="image"></i> Anexar Foto/Print
+                <i data-lucide="image"></i> Anexar Foto
                 <input type="file" id="tarefa-img" accept="image/*" style="display: none;" onchange="previewImg(this)">
             </label>
-            
             <div id="preview-container"></div>
 
             <div class="area-botoes-modal">
@@ -80,8 +74,7 @@
         </div>
     </div>
 
-    <script type="module"
-        src="agenda-logica.js"></script>
+    <script type="module" src="agenda-logica.js"></script>
     <script>lucide.createIcons();</script>
 </body>
 </html>
