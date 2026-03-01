@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     carregarTarefas();
 });
 
+// BUSCA AS MATÉRIAS DAS NOTAS
 function carregarMateriasNoSelect() {
     const select = document.getElementById('tarefa-materia');
     const materiasSalvas = localStorage.getItem('materias_db') || localStorage.getItem('materias');
@@ -118,6 +119,7 @@ function adicionarTarefa() {
     carregarTarefas(dataFim);
 }
 
+// FUNÇÃO PARA DAR CHECK
 function alternarConcluida(id) {
     let agenda = JSON.parse(localStorage.getItem('dt_agenda') || '[]');
     const index = agenda.findIndex(t => t.id === id);
@@ -138,7 +140,7 @@ function carregarTarefas(filtroData = null) {
         agenda = agenda.filter(t => filtroData >= t.dataInicio && filtroData <= t.dataFim);
         titulo.innerText = "Atividades em " + filtroData.split('-').reverse().join('/');
     } else {
-        titulo.innerText = "Todas as Atividades";
+        titulo.innerText = "Todos os Compromissos";
     }
 
     if (agenda.length === 0) {
@@ -146,7 +148,13 @@ function carregarTarefas(filtroData = null) {
         return;
     }
 
-    agenda.sort((a, b) => new Date(a.dataFim) - new Date(b.dataFim));
+    // --- ORDENAÇÃO: PENDENTES NO TOPO, CONCLUÍDAS NO FIM ---
+    agenda.sort((a, b) => {
+        if (a.concluida !== b.concluida) {
+            return a.concluida ? 1 : -1; 
+        }
+        return new Date(a.dataFim) - new Date(b.dataFim);
+    });
 
     lista.innerHTML = agenda.map(t => {
         const fim = new Date(t.dataFim + "T00:00:00");
@@ -158,7 +166,7 @@ function carregarTarefas(filtroData = null) {
         let textoStatus = `Faltam ${diffDays} dias`;
 
         if (t.concluida) {
-            corStatus = "#00d2ff"; // Azul para concluído
+            corStatus = "#00d2ff"; // Azul para feito
             textoStatus = "CONCLUÍDO! 🎉";
         } else if (diffDays < 0) {
             corStatus = "#666"; 
@@ -172,7 +180,7 @@ function carregarTarefas(filtroData = null) {
         }
 
         return `
-        <div class="tarefa-item" style="border-left: 5px solid ${corStatus}; opacity: ${t.concluida ? '0.5' : '1'};">
+        <div class="tarefa-item" style="border-left: 5px solid ${corStatus}; opacity: ${t.concluida ? '0.5' : '1'}; transition: 0.3s;">
             <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                 <div onclick="alternarConcluida(${t.id})" style="cursor:pointer; flex: 1;">
                     <span style="background:var(--primary); font-size:10px; padding:3px 8px; border-radius:5px; font-weight:bold; color:white;">${t.materia}</span>
@@ -182,7 +190,7 @@ function carregarTarefas(filtroData = null) {
                     <div style="margin-top:5px; font-size:11px; color:#aaa;">Prazo: ${t.dataFim.split('-').reverse().join('/')}</div>
                     <div style="margin-top:5px; color:${corStatus}; font-weight:bold; font-size:12px;">${textoStatus}</div>
                 </div>
-                <div style="display:flex; gap: 5px;">
+                <div style="display:flex; gap: 8px;">
                     <button onclick="alternarConcluida(${t.id})" style="background:rgba(0,210,255,0.1); border:none; color:#00d2ff; padding:8px; border-radius:10px;">
                         <i data-lucide="${t.concluida ? 'rotate-ccw' : 'check-circle'}" style="width:18px;"></i>
                     </button>
@@ -191,7 +199,7 @@ function carregarTarefas(filtroData = null) {
                     </button>
                 </div>
             </div>
-            ${t.imagem ? `<img src="${t.imagem}" style="width:100%; border-radius:15px; margin-top:15px; border: 1px solid rgba(255,255,255,0.1); filter: ${t.concluida ? 'grayscale(100%)' : 'none'};">` : ''}
+            ${t.imagem ? `<img src="${t.imagem}" style="width:100%; border-radius:15px; margin-top:15px; border: 1px solid rgba(255,255,255,0.1); filter: ${t.concluida ? 'grayscale(100%) brightness(0.5)' : 'none'};">` : ''}
         </div>`;
     }).join('');
     lucide.createIcons();
@@ -203,4 +211,4 @@ function removerTarefa(id) {
     localStorage.setItem('dt_agenda', JSON.stringify(agenda));
     renderizarCalendario();
     carregarTarefas(dataSelecionada);
-                            }
+        }
