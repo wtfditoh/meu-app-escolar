@@ -1,33 +1,65 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, addDoc, query, where, getDocs, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBh3wsAGXY-03HtT47TFlAZGWrusNtjTrc",
+  authDomain: "dt-scho0l.firebaseapp.com",
+  projectId: "dt-scho0l",
+  storageBucket: "dt-scho0l.firebasestorage.app",
+  messagingSenderId: "78578509391",
+  appId: "1:78578509391:web:7f5ede4f967ca8ce292c3a",
+  measurementId: "G-F7TG23TBTL"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const userPhone = localStorage.getItem('dt_user_phone');
+const userType = localStorage.getItem('dt_user_type');
+
 let mesExibido = new Date();
 let dataSelecionada = "";
 let imagemBase64 = "";
+let agendaGlobal = []; // Para não precisar ler o Google toda hora
 
 document.addEventListener('DOMContentLoaded', () => {
     carregarMateriasNoSelect();
+    buscarDadosNuvem(); // Agora buscamos do Google primeiro
+});
+
+// --- BUSCAR DADOS (O coração da sincronização) ---
+async function buscarDadosNuvem() {
+    if (userType === 'local') {
+        agendaGlobal = JSON.parse(localStorage.getItem('dt_agenda') || '[]');
+    } else {
+        const q = query(collection(db, "agenda"), where("usuario", "==", userPhone));
+        const snap = await getDocs(q);
+        agendaGlobal = [];
+        snap.forEach(d => agendaGlobal.push({ id_firebase: d.id, ...d.data() }));
+    }
     renderizarCalendario();
     carregarTarefas();
-});
+}
 
 function carregarMateriasNoSelect() {
     const select = document.getElementById('tarefa-materia');
     const materiasSalvas = localStorage.getItem('materias_db') || localStorage.getItem('materias');
     const materiasDB = JSON.parse(materiasSalvas || '[]');
     select.innerHTML = '<option value="Geral">Geral / Outros</option>';
-    if (materiasDB.length > 0) {
-        materiasDB.forEach(m => {
-            if(m.nome) {
-                const opt = document.createElement('option');
-                opt.value = m.nome; opt.textContent = m.nome;
-                select.appendChild(opt);
-            }
-        });
-    }
+    materiasDB.forEach(m => {
+        if(m.nome) {
+            const opt = document.createElement('option');
+            opt.value = m.nome; opt.textContent = m.nome;
+            select.appendChild(opt);
+        }
+    });
 }
 
 function renderizarCalendario() {
     const grid = document.getElementById('calendar-grid');
     const topoMes = document.getElementById('mes-topo');
+    if(!grid) return;
     grid.innerHTML = "";
+    
     const nomesDias = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
     nomesDias.forEach(d => grid.innerHTML += `<div class="dia-semana">${d}</div>`);
 
@@ -37,13 +69,12 @@ function renderizarCalendario() {
 
     const primeiroDiaMes = new Date(ano, mes, 1).getDay();
     const diasNoMes = new Date(ano, mes + 1, 0).getDate();
-    const agenda = JSON.parse(localStorage.getItem('dt_agenda') || '[]');
 
     for (let i = 0; i < primeiroDiaMes; i++) grid.innerHTML += `<div></div>`;
 
     for (let dia = 1; dia <= diasNoMes; dia++) {
         const dataStr = `${ano}-${String(mes + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
-        const temTarefa = agenda.some(t => dataStr >= t.dataInicio && dataStr <= t.dataFim);
+        const temTarefa = agendaGlobal.some(t => dataStr >= t.dataInicio && dataStr <= t.dataFim);
         const hoje = new Date().toISOString().split('T')[0] === dataStr ? 'hoje' : '';
         const sel = dataSelecionada === dataStr ? 'selecionado' : '';
         
@@ -56,34 +87,33 @@ function renderizarCalendario() {
     lucide.createIcons();
 }
 
-function selecionarDia(data) {
+window.selecionarDia = (data) => {
     dataSelecionada = (dataSelecionada === data) ? "" : data;
     renderizarCalendario();
     carregarTarefas(dataSelecionada);
-}
+};
 
-function mudarMes(valor) {
+window.mudarMes = (valor) => {
     mesExibido.setMonth(mesExibido.getMonth() + valor);
     renderizarCalendario();
-}
+};
 
-function abrirModalAgendaHoje() {
+window.abrirModalAgendaHoje = () => {
     const hoje = new Date().toISOString().split('T')[0];
     document.getElementById('tarefa-data-inicio').value = dataSelecionada || hoje;
     document.getElementById('tarefa-data-fim').value = dataSelecionada || hoje;
-    carregarMateriasNoSelect();
     document.getElementById('modal-agenda').style.display = 'flex';
-}
+};
 
-function fecharModalAgenda() {
+window.fecharModalAgenda = () => {
     document.getElementById('modal-agenda').style.display = 'none';
     document.getElementById('preview-container').innerHTML = "";
     imagemBase64 = "";
     document.getElementById('tarefa-nome').value = "";
     document.getElementById('tarefa-desc').value = "";
-}
+};
 
-function previewImg(input) {
+window.previewImg = (input) => {
     if (input.files && input.files[0]) {
         const reader = new FileReader();
         reader.onload = e => {
@@ -92,126 +122,110 @@ function previewImg(input) {
         };
         reader.readAsDataURL(input.files[0]);
     }
-}
+};
 
-function adicionarTarefa() {
-    const btnSalvar = document.getElementById('btn-salvar-agenda');
+window.adicionarTarefa = async function() {
     const nome = document.getElementById('tarefa-nome').value.trim();
     const desc = document.getElementById('tarefa-desc').value.trim();
     const dataInicio = document.getElementById('tarefa-data-inicio').value;
     const dataFim = document.getElementById('tarefa-data-fim').value;
     const materia = document.getElementById('tarefa-materia').value;
 
-    if (!nome || !dataInicio || !dataFim) {
-        const txt = btnSalvar.innerText;
-        btnSalvar.innerText = "Preencha tudo!";
-        btnSalvar.style.backgroundColor = "#ff4444";
-        setTimeout(() => { btnSalvar.innerText = txt; btnSalvar.style.backgroundColor = "#8a2be2"; }, 2000);
-        return;
-    }
+    if (!nome || !dataInicio || !dataFim) return alert("Preencha os campos obrigatórios!");
 
-    const nova = { id: Date.now(), nome, descricao: desc, dataInicio, dataFim, materia, imagem: imagemBase64, concluida: false };
-    let agenda = JSON.parse(localStorage.getItem('dt_agenda') || '[]');
-    agenda.push(nova);
-    localStorage.setItem('dt_agenda', JSON.stringify(agenda));
+    const nova = { 
+        nome, 
+        descricao: desc, 
+        dataInicio, 
+        dataFim, 
+        materia, 
+        imagem: imagemBase64, 
+        concluida: false,
+        usuario: userPhone,
+        criadoEm: Date.now()
+    };
+
+    if (userType === 'local') {
+        agendaGlobal.push(nova);
+        localStorage.setItem('dt_agenda', JSON.stringify(agendaGlobal));
+    } else {
+        await addDoc(collection(db, "agenda"), nova);
+    }
 
     fecharModalAgenda();
-    renderizarCalendario();
-    carregarTarefas(dataFim);
-}
+    buscarDadosNuvem(); // Recarrega do Google
+};
 
-function alternarConcluida(id) {
-    let agenda = JSON.parse(localStorage.getItem('dt_agenda') || '[]');
-    const index = agenda.findIndex(t => t.id === id);
-    if (index !== -1) {
-        agenda[index].concluida = !agenda[index].concluida;
-        localStorage.setItem('dt_agenda', JSON.stringify(agenda));
-        carregarTarefas(dataSelecionada);
+window.alternarConcluida = async function(idFirebase, idLocal) {
+    if (userType === 'local') {
+        const index = agendaGlobal.findIndex(t => t.criadoEm === idLocal);
+        if (index !== -1) {
+            agendaGlobal[index].concluida = !agendaGlobal[index].concluida;
+            localStorage.setItem('dt_agenda', JSON.stringify(agendaGlobal));
+        }
+    } else {
+        const tarefaRef = doc(db, "agenda", idFirebase);
+        const tarefa = agendaGlobal.find(t => t.id_firebase === idFirebase);
+        await updateDoc(tarefaRef, { concluida: !tarefa.concluida });
     }
-}
+    buscarDadosNuvem();
+};
 
-// FUNÇÃO PARA EXPANDIR O TEXTO CLICADO
-function expandirTexto(el) {
-    el.classList.toggle('expandido');
-}
+window.removerTarefa = async function(idFirebase, idLocal) {
+    if (!confirm("Excluir atividade?")) return;
 
-function carregarTarefas(filtroData = null) {
-    const lista = document.getElementById('lista-agenda');
+    if (userType === 'local') {
+        agendaGlobal = agendaGlobal.filter(t => t.criadoEm !== idLocal);
+        localStorage.setItem('dt_agenda', JSON.stringify(agendaGlobal));
+    } else {
+        await deleteDoc(doc(db, "agenda", idFirebase));
+    }
+    buscarDadosNuvem();
+};
+
+window.carregarTarefas = (filtroData = null) => {
+    const lista = document.getElementById('lista-tarefas'); // Ajustado para o ID que mudamos no HTML
     const titulo = document.getElementById('titulo-lista');
-    let agenda = JSON.parse(localStorage.getItem('dt_agenda') || '[]');
+    let tarefasParaExibir = [...agendaGlobal];
     const hojeStr = new Date().toISOString().split('T')[0];
     
     if (filtroData && filtroData !== "") {
-        agenda = agenda.filter(t => filtroData >= t.dataInicio && filtroData <= t.dataFim);
+        tarefasParaExibir = tarefasParaExibir.filter(t => filtroData >= t.dataInicio && filtroData <= t.dataFim);
         titulo.innerText = "Atividades em " + filtroData.split('-').reverse().join('/');
     } else {
         titulo.innerText = "Todas as Atividades";
     }
 
-    if (agenda.length === 0) {
+    if (tarefasParaExibir.length === 0) {
         lista.innerHTML = "<p style='color:#666; text-align:center; padding:30px;'>Nada agendado.</p>";
         return;
     }
 
-    // ORDENAÇÃO: PENDENTES PRIMEIRO, CONCLUÍDAS POR ÚLTIMO
-    agenda.sort((a, b) => {
-        if (a.concluida !== b.concluida) return a.concluida ? 1 : -1; 
-        return new Date(a.dataFim) - new Date(b.dataFim);
-    });
+    tarefasParaExibir.sort((a, b) => a.concluida - b.concluida);
 
-    lista.innerHTML = agenda.map(t => {
-        const fim = new Date(t.dataFim + "T00:00:00");
-        const hoje = new Date(hojeStr + "T00:00:00");
-        const diffTime = fim - hoje;
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        
-        let corStatus = "#00C851"; 
-        let textoStatus = `Faltam ${diffDays} dias`;
-
-        if (t.concluida) {
-            corStatus = "#00d2ff"; textoStatus = "CONCLUÍDO! 🎉";
-        } else if (diffDays < 0) {
-            corStatus = "#666"; textoStatus = "PRAZO ENCERRADO";
-        } else if (diffDays <= 3) {
-            corStatus = "#ff4444"; textoStatus = diffDays === 0 ? "ENTREGA HOJE!" : `URGENTE: Faltam ${diffDays} dias`;
-        } else if (diffDays <= 7) {
-            corStatus = "#ffbb33"; textoStatus = `ATENÇÃO: Faltam ${diffDays} dias`;
-        }
+    lista.innerHTML = tarefasParaExibir.map(t => {
+        const diffDays = Math.ceil((new Date(t.dataFim + "T00:00:00") - new Date(hojeStr + "T00:00:00")) / (1000 * 60 * 60 * 24));
+        let corStatus = t.concluida ? "#00d2ff" : (diffDays < 0 ? "#666" : (diffDays <= 3 ? "#ff4444" : "#00C851"));
 
         return `
-        <div class="tarefa-item" style="border-left: 5px solid ${corStatus}; opacity: ${t.concluida ? '0.5' : '1'};">
-            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                <div style="flex: 1; min-width: 0;"> <span style="background:var(--primary); font-size:10px; padding:3px 8px; border-radius:5px; font-weight:bold; color:white;">${t.materia}</span>
-                    <b onclick="alternarConcluida(${t.id})" style="display:block; margin-top:8px; font-size:18px; color:white; text-decoration: ${t.concluida ? 'line-through' : 'none'}; cursor:pointer;">
-                        ${t.nome}
-                    </b>
-                    
-                    ${t.descricao ? `
-                        <p onclick="expandirTexto(this)" class="tarefa-desc-texto">${t.descricao}</p>
-                    ` : ''}
-                    
-                    <div style="margin-top:5px; font-size:11px; color:#aaa;">Prazo: ${t.dataFim.split('-').reverse().join('/')}</div>
-                    <div style="margin-top:5px; color:${corStatus}; font-weight:bold; font-size:12px;">${textoStatus}</div>
+        <div class="tarefa-item" style="border-left: 5px solid ${corStatus}; margin-bottom:15px; background:rgba(255,255,255,0.03); padding:15px; border-radius:15px;">
+            <div style="display:flex; justify-content:space-between;">
+                <div style="flex:1">
+                    <span style="background:var(--primary); font-size:10px; padding:3px 8px; border-radius:5px; color:white;">${t.materia}</span>
+                    <b onclick="alternarConcluida('${t.id_firebase}', ${t.criadoEm})" style="display:block; margin-top:8px; font-size:18px; color:white; text-decoration:${t.concluida ? 'line-through' : 'none'}; cursor:pointer;">${t.nome}</b>
+                    <p style="color:#aaa; font-size:13px; margin:5px 0;">${t.descricao || ''}</p>
+                    <div style="color:${corStatus}; font-size:12px; font-weight:bold;">Prazo: ${t.dataFim.split('-').reverse().join('/')}</div>
                 </div>
-                <div class="area-acoes">
-                    <button onclick="alternarConcluida(${t.id})" style="background:rgba(0,210,255,0.1); border:none; color:#00d2ff; padding:8px; border-radius:10px;">
-                        <i data-lucide="${t.concluida ? 'rotate-ccw' : 'check-circle'}" style="width:18px;"></i>
-                    </button>
-                    <button onclick="removerTarefa(${t.id})" style="background:rgba(255,68,68,0.1); border:none; color:#ff4444; padding:8px; border-radius:10px;">
-                        <i data-lucide="trash-2" style="width:18px;"></i>
-                    </button>
+                <div style="display:flex; gap:10px;">
+                    <button onclick="alternarConcluida('${t.id_firebase}', ${t.criadoEm})" style="background:none; border:none; color:#00d2ff;"><i data-lucide="check-circle"></i></button>
+                    <button onclick="removerTarefa('${t.id_firebase}', ${t.criadoEm})" style="background:none; border:none; color:#ff4444;"><i data-lucide="trash-2"></i></button>
                 </div>
             </div>
-            ${t.imagem ? `<img src="${t.imagem}" style="width:100%; border-radius:15px; margin-top:15px; border: 1px solid rgba(255,255,255,0.1); filter: ${t.concluida ? 'grayscale(100%) brightness(0.5)' : 'none'};">` : ''}
+            ${t.imagem ? `<img src="${t.imagem}" style="width:100%; border-radius:10px; margin-top:10px;">` : ''}
         </div>`;
     }).join('');
     lucide.createIcons();
-}
+};
 
-function removerTarefa(id) {
-    let agenda = JSON.parse(localStorage.getItem('dt_agenda') || '[]');
-    agenda = agenda.filter(t => t.id !== id);
-    localStorage.setItem('dt_agenda', JSON.stringify(agenda));
-    renderizarCalendario();
-    carregarTarefas(dataSelecionada);
-}
+window.expandirTexto = (el) => el.classList.toggle('expandido');
+    
