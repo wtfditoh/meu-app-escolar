@@ -1,40 +1,93 @@
-const GROQ_API_KEY = "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";
+// Sua nova chave do Groq
+const API_KEY = "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";
 
-async function enviarPergunta() {
-    const input = document.getElementById('user-input'); // Nome do seu campo de texto
-    const chatContainer = document.getElementById('chat-container');
-    const texto = input.value;
+// Função mestre para falar com a IA
+async function chamarIA(prompt) {
+    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${API_KEY}`,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            model: "llama-3.3-70b-versatile",
+            messages: [
+                { role: "system", content: "Você é o assistente do DT School. Responda de forma clara e didática." },
+                { role: "user", content: prompt }
+            ],
+            temperature: 0.7
+        })
+    });
+    return await response.json();
+}
 
-    if (!texto) return;
+// Lógica para GERAR QUESTÕES
+async function gerarQuestoes() {
+    const assunto = document.getElementById('assunto-ia').value;
+    const container = document.getElementById('container-questoes');
+    const btn = document.getElementById('btn-gerar');
 
-    // Adiciona sua pergunta na tela
-    chatContainer.innerHTML += `<div class="user-msg">${texto}</div>`;
-    input.value = "";
+    if (!assunto) return alert("Digite um assunto primeiro!");
+
+    btn.innerText = "Gerando...";
+    btn.disabled = true;
+    container.innerHTML = "";
+
+    const prompt = `Gere 3 questões de múltipla escolha sobre ${assunto}. Retorne APENAS o JSON: [{"pergunta":"", "opcoes":["","","",""], "correta":0}]`;
 
     try {
-        const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-            method: "POST",
-            headers: {
-                "Authorization": `Bearer ${GROQ_API_KEY}`,
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                model: "llama-3.3-70b-versatile", // Modelo rápido e grátis
-                messages: [
-                    { role: "system", content: "Você é o assistente do DT School, focado em ajudar alunos com simulados e notas." },
-                    { role: "user", content: texto }
-                ]
-            })
-        });
-
-        const data = await response.json();
-        const respostaIA = data.choices[0].message.content;
-
-        // Adiciona a resposta da IA na tela
-        chatContainer.innerHTML += `<div class="ai-msg">${respostaIA}</div>`;
+        const data = await chamarIA(prompt);
+        // Limpa o texto caso a IA mande markdown (```json)
+        const textoLimpo = data.choices[0].message.content.replace(/```json|```/g, "");
+        const questoes = JSON.parse(textoLimpo);
         
-    } catch (error) {
-        console.error("Erro na IA:", error);
-        alert("Ops, deu erro na conexão com a IA!");
+        questoes.forEach((q, i) => {
+            const div = document.createElement('div');
+            div.className = "questao-card";
+            div.innerHTML = `<p><strong>${i+1}.</strong> ${q.pergunta}</p>` + 
+                q.opcoes.map((opt, idx) => `<button class="opcao-btn" onclick="verificar(this,${idx},${q.correta})">${opt}</button>`).join('');
+            container.appendChild(div);
+        });
+    } catch (e) {
+        alert("Erro ao gerar: " + e.message);
+    } finally {
+        btn.innerText = "Gerar Questões";
+        btn.disabled = false;
+    }
+}
+
+// Lógica para o CHAT (Tira-Dúvidas)
+async function perguntarIA() {
+    const input = document.getElementById('pergunta-ia');
+    const chat = document.getElementById('chat-respostas');
+    const btn = document.getElementById('btn-perguntar');
+    
+    if (!input.value) return;
+
+    const msg = input.value;
+    input.value = "";
+    btn.disabled = true;
+    chat.innerHTML += `<div class="user-msg"><b>Você:</b> ${msg}</div>`;
+
+    try {
+        const data = await chamarIA(msg);
+        const resposta = data.choices[0].message.content;
+        chat.innerHTML += `<div class="ai-msg"><b>IA:</b> ${resposta}</div>`;
+        chat.scrollTop = chat.scrollHeight;
+    } catch (e) {
+        chat.innerHTML += `<div style="color:red;">Erro ao responder.</div>`;
+    } finally {
+        btn.disabled = false;
+    }
+}
+
+function verificar(btn, escolhida, correta) {
+    const botoes = btn.parentElement.querySelectorAll('.opcao-btn');
+    botoes.forEach(b => b.disabled = true);
+    if (escolhida === correta) {
+        btn.style.background = "#28a745"; // Verde sucesso
+    } else {
+        btn.style.background = "#dc3545"; // Vermelho erro
+        botoes[correta].style.background = "#28a745";
     }
 }
