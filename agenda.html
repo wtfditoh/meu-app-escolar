@@ -13,7 +13,7 @@
         <button onclick="window.location.href='index.html'" class="btn-icon">
             <i data-lucide="arrow-left"></i>
         </button>
-        <h1 id="mes-topo" class="topo-compacto">Carregando...</h1>
+        <h1 id="mes-topo" class="topo-compacto">Agenda</h1>
         <div style="width: 38px;"></div>
     </header>
 
@@ -27,18 +27,18 @@
         </div>
 
         <div class="agenda-section">
-            <h3 class="section-title">Compromissos</h3>
+            <h3 class="section-title" id="titulo-lista">Todos os Compromissos</h3>
             <div id="lista-agenda"></div>
         </div>
     </main>
 
     <button class="fab-button" onclick="abrirModalAgendaHoje()">
-        <i data-lucide="plus"></i>
+        <i data-lucide="plus" style="width: 30px; height: 30px;"></i>
     </button>
 
-    <div id="modal-agenda" class="modal" style="display: none; align-items: center; justify-content: center;">
-        <div class="modal-content glass" style="width: 90%; max-width: 400px;">
-            <h3 id="modal-data-titulo" style="color: var(--primary); margin-bottom: 15px;">Novo Compromisso</h3>
+    <div id="modal-agenda" class="modal" style="display: none;">
+        <div class="modal-content glass">
+            <h3 style="color: var(--primary); margin-bottom: 20px;">Novo Compromisso</h3>
             
             <input type="text" id="tarefa-nome" placeholder="Título da atividade" class="input-ia">
             
@@ -52,16 +52,16 @@
 
             <input type="date" id="tarefa-data-input" class="input-ia">
             
-            <label class="btn-anexo" for="tarefa-img" style="display: flex; align-items: center; justify-content: center; gap: 8px; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; border: 1px dashed #444; margin: 10px 0;">
+            <label class="btn-anexo" for="tarefa-img">
                 <i data-lucide="image"></i> Anexar Foto
                 <input type="file" id="tarefa-img" accept="image/*" style="display: none;" onchange="previewImg(this)">
             </label>
             
             <div id="preview-container"></div>
 
-            <div class="area-botoes-modal" style="display: flex; gap: 10px; margin-top: 20px;">
-                <button onclick="fecharModalAgenda()" class="btn-modal-voltar" style="flex: 1;">Sair</button>
-                <button onclick="adicionarTarefa()" class="btn-modal-acao" style="flex: 1;">Salvar</button>
+            <div class="area-botoes-modal">
+                <button onclick="fecharModalAgenda()" class="btn-modal-voltar">Sair</button>
+                <button onclick="adicionarTarefa()" class="btn-modal-acao">Salvar</button>
             </div>
         </div>
     </div>
