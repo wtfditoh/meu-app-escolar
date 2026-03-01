@@ -184,7 +184,7 @@ window.removerTarefa = async function(idFirebase, idLocal) {
 };
 
 window.carregarTarefas = (filtroData = null) => {
-    const lista = document.getElementById('lista-tarefas'); // Ajustado para o ID que mudamos no HTML
+    const lista = document.getElementById('lista-agenda'); // Ajustado para o ID que mudamos no HTML
     const titulo = document.getElementById('titulo-lista');
     let tarefasParaExibir = [...agendaGlobal];
     const hojeStr = new Date().toISOString().split('T')[0];
