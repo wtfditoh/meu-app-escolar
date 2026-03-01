@@ -2,52 +2,50 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DT Inteligência</title>
+    <link rel="stylesheet" href="ia-estilo.css">
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="stylesheet" href="ia-estilo.css?v=1.1">
 </head>
-<body class="dt-dark-mode">
-    <div id="dt-toast">Aviso</div>
+<body>
 
-    <header class="dt-header">
-        <button onclick="window.location.href='index.html'" class="dt-back-btn"><i data-lucide="arrow-left"></i></button>
-        <span class="dt-title">DT Inteligência</span>
-        <div style="width:40px"></div>
-    </header>
+    <div class="fixed-top">
+        <header class="header">
+            <button onclick="window.location.href='index.html'" style="background:none; border:none; color:white;"><i data-lucide="arrow-left"></i></button>
+            <span style="font-weight:bold;">DT INTELIGÊNCIA</span>
+            <button onclick="localStorage.clear(); location.reload();" style="background:none; border:none; color:#444;"><i data-lucide="refresh-cw"></i></button>
+        </header>
 
-    <nav class="dt-tabs">
-        <button id="tab-sim" class="dt-tab active" onclick="switchTab('sim')">Simulado</button>
-        <button id="tab-chat" class="dt-tab" onclick="switchTab('chat')">Tira-Dúvidas</button>
-    </nav>
+        <nav class="tabs-box">
+            <button id="btn-sim" class="tab-btn active" onclick="showAba('simulado')">Simulado</button>
+            <button id="btn-chat" class="tab-btn" onclick="showAba('chat')">Tira-Dúvidas</button>
+        </nav>
+    </div>
 
-    <main class="dt-main">
-        <section id="sec-sim" class="dt-page active">
-            <div class="dt-card">
-                <input type="text" id="dt-subject" placeholder="Assunto (Ex: Revolução Industrial)" class="dt-input">
-                <select id="dt-level" class="dt-input">
-                    <option value="2º ano EM">2º ano EM</option>
-                    <option value="3º ano EM">3º ano EM</option>
+    <main class="main-content">
+        <section id="aba-simulado" class="aba-painel active">
+            <div class="card-ia">
+                <input type="text" id="assunto" placeholder="Assunto do Simulado">
+                <select id="nivel">
+                    <option value="Ensino Médio">Ensino Médio</option>
+                    <option value="ENEM">ENEM / Vestibular</option>
                 </select>
-                <button onclick="generateSim()" id="btn-gen" class="dt-btn-purple">Gerar 10 Questões</button>
+                <button class="btn-principal" onclick="gerarSimulado()">GERAR QUESTÕES</button>
             </div>
-            <div id="dt-questions-container"></div>
+            <div id="questoes-lista"></div>
         </section>
 
-        <section id="sec-chat" class="dt-page">
-            <div class="dt-chat-wrapper">
-                <button class="dt-btn-clear" onclick="clearChat()">Limpar Conversa</button>
-                <div id="dt-chat-box" class="dt-chat-scroll">
-                    <div class="dt-msg-ia">Olá! Mande sua dúvida que eu te explico agora.</div>
-                </div>
-                <div class="dt-input-bar">
-                    <input type="text" id="dt-chat-input" placeholder="Sua dúvida..." onkeypress="if(event.key==='Enter') sendToIA()">
-                    <button onclick="sendToIA()" class="dt-btn-send"><i data-lucide="send"></i></button>
-                </div>
+        <section id="aba-chat" class="aba-painel">
+            <div id="chat-box" class="chat-log">
+                <div class="bolha ia">Olá! Mande sua dúvida que eu te respondo agora.</div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="chat-in" placeholder="Sua dúvida..." onkeypress="if(event.key==='Enter') enviarMsg()">
+                <button onclick="enviarMsg()" style="background:var(--primary); border:none; width:45px; height:45px; border-radius:50%; color:white;"><i data-lucide="send"></i></button>
             </div>
         </section>
     </main>
 
-    <script src="ia-logica.js?v=1.1"></script>
+    <script src="ia-logica.js"></script>
 </body>
 </html>
