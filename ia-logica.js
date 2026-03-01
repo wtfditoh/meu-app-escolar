@@ -2,9 +2,26 @@ const API_KEY = "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";
 
 document.addEventListener('DOMContentLoaded', () => {
     lucide.createIcons();
-    const save = localStorage.getItem('dt_chat');
+    // Tenta carregar o histórico de qualquer uma das chaves que usamos antes para garantir
+    const save = localStorage.getItem('dt_chat') || localStorage.getItem('dt_chat_data') || localStorage.getItem('chat_dt');
     if(save) document.getElementById('chat-box').innerHTML = save;
 });
+
+// FUNÇÃO DA LIXEIRA CORRIGIDA
+function limparHistorico() {
+    if(confirm("Deseja apagar todo o histórico de conversas?")) {
+        // Limpa todas as possíveis chaves de memória
+        localStorage.removeItem('dt_chat');
+        localStorage.removeItem('dt_chat_data');
+        localStorage.removeItem('chat_dt');
+        
+        // Limpa visualmente a tela
+        document.getElementById('chat-box').innerHTML = '<div class="bolha ia">Olá! Qual sua dúvida de hoje?</div>';
+        
+        // Força o recarregamento para limpar estados da IA
+        window.location.reload();
+    }
+}
 
 function showAba(nome) {
     document.querySelectorAll('.aba-painel').forEach(a => a.classList.remove('active'));
@@ -12,10 +29,6 @@ function showAba(nome) {
     document.getElementById('aba-' + nome).classList.add('active');
     document.getElementById('btn-' + (nome === 'simulado' ? 'sim' : 'chat')).classList.add('active');
     if(nome === 'chat') window.scrollTo(0, document.body.scrollHeight);
-}
-
-function limparHistorico() {
-    if(confirm("Limpar chat?")) { localStorage.removeItem('dt_chat'); location.reload(); }
 }
 
 async function callIA(p) {
@@ -82,6 +95,7 @@ async function enviarMsg() {
 
     const r = await callIA(`Responda de forma didática e curta: ${val}`);
     box.innerHTML += `<div class="bolha ia">${r}</div>`;
+    // Salva na chave principal
     localStorage.setItem('dt_chat', box.innerHTML);
     window.scrollTo(0, document.body.scrollHeight);
 }
