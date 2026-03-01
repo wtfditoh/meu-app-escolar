@@ -7,48 +7,49 @@
     <link rel="stylesheet" href="ia-estilo.css">
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body>
+<body class="dt-corpo">
 
-    <div class="fixed-top">
-        <header class="header">
-            <button onclick="window.location.href='index.html'" class="btn-icon"><i data-lucide="chevron-left"></i></button>
-            <span style="font-weight:bold;">DT INTELIGÊNCIA</span>
-            <button onclick="perguntarLimpar()" class="btn-icon" style="color:#555 !important;"><i data-lucide="trash-2"></i></button>
-        </header>
-        <nav class="tabs-box">
-            <button id="btn-sim" class="tab-btn active" onclick="showAba('simulado')">Simulado</button>
-            <button id="btn-chat" class="tab-btn" onclick="showAba('chat')">Tira-Dúvidas</button>
-        </nav>
+    <div class="dt-topo">
+        <button onclick="window.location.href='index.html'" class="dt-lixeira" style="color:white !important;"><i data-lucide="chevron-left"></i></button>
+        <span style="font-weight:bold; letter-spacing:1px;">DT INTELIGÊNCIA</span>
+        <button onclick="limparTudo()" class="dt-lixeira"><i data-lucide="trash-2"></i></button>
     </div>
 
-    <main class="main-content">
-        <section id="aba-simulado" class="aba-painel active">
-            <div class="card-ia">
-                <input type="text" id="assunto" placeholder="Assunto do simulado...">
-                <select id="nivel">
+    <nav class="dt-abas-box">
+        <button id="tab-simulado" class="dt-tab active" onclick="aba('simulado')">Simulado</button>
+        <button id="tab-chat" class="dt-tab" onclick="aba('chat')">Tira-Dúvidas</button>
+    </nav>
+
+    <main class="dt-container">
+        <section id="painel-simulado" class="dt-painel active">
+            <div class="dt-card">
+                <input type="text" id="tema" class="dt-input" placeholder="Assunto do simulado...">
+                <select id="nivel" class="dt-select">
                     <option value="Ensino Médio">Ensino Médio</option>
-                    <option value="ENEM">ENEM</option>
+                    <option value="ENEM">ENEM / Vestibular</option>
                 </select>
-                <button class="btn-principal" onclick="validarEGerar()">GERAR SIMULADO</button>
+                <button class="dt-btn-gerar" onclick="gerar()">GERAR SIMULADO</button>
             </div>
-            <div id="questoes-lista"></div>
+            <div id="questoes"></div>
         </section>
 
-        <section id="aba-chat" class="aba-painel">
-            <div id="chat-box" class="chat-log"></div>
-            <div class="chat-input-area">
-                <input type="text" id="chat-in" placeholder="Sua dúvida...">
-                <button onclick="enviarMsg()" class="btn-send"><i data-lucide="send"></i></button>
+        <section id="painel-chat" class="dt-painel">
+            <div id="chat-box" class="dt-chat-box">
+                <div class="dt-bolha ia">Olá! Sou seu tutor. Pergunte algo sobre seus estudos.</div>
+            </div>
+            <div class="dt-chat-input-fix">
+                <input type="text" id="msg-in" placeholder="Sua dúvida de estudo..." style="background:transparent; border:none; color:white; width:80%; outline:none;">
+                <button onclick="enviar()" class="dt-lixeira" style="color:var(--roxo) !important;"><i data-lucide="send"></i></button>
             </div>
         </section>
     </main>
 
-    <div id="custom-modal" class="modal-overlay">
-        <div class="card-ia modal-content">
+    <div id="custom-modal" class="dt-modal">
+        <div class="dt-card" style="max-width:320px; text-align:center;">
             <p id="modal-text" style="margin-bottom:20px;"></p>
             <div style="display:flex; gap:10px;">
-                <button id="btn-modal-cancel" class="tab-btn" style="display:none;">Sair</button>
-                <button id="btn-modal-ok" class="btn-principal" style="padding:10px !important;">OK</button>
+                <button id="btn-modal-cancel" class="dt-tab" style="display:none;">Voltar</button>
+                <button id="btn-modal-ok" class="dt-btn-gerar" style="padding:10px !important;">OK</button>
             </div>
         </div>
     </div>
