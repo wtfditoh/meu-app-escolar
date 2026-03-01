@@ -2,81 +2,133 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Login - DT School</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <style>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="estilo.css"> <style>
         :root {
             --primary: #8a2be2;
-            --primary-glow: rgba(138, 43, 226, 0.5);
-            --bg: #0f0f1e;
-            --card-bg: rgba(255, 255, 255, 0.05);
+            --bg: #0a0a0a;
+            --glass: rgba(255, 255, 255, 0.05);
         }
+
         body {
-            margin: 0; padding: 0; font-family: 'Poppins', sans-serif;
-            background: var(--bg); color: white;
-            display: flex; justify-content: center; align-items: center;
-            height: 100vh; overflow: hidden;
+            background-color: var(--bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            color: white;
         }
-        .bg-glow {
-            position: absolute; width: 300px; height: 300px; background: var(--primary);
-            filter: blur(150px); border-radius: 50%; z-index: -1; opacity: 0.3;
-            animation: move 10s infinite alternate;
-        }
-        @keyframes move { from { transform: translate(-50%, -50%); } to { transform: translate(50%, 50%); } }
+
         .login-card {
-            width: 100%; max-width: 380px; padding: 40px;
-            background: var(--card-bg); backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 30px;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.5); text-align: center; margin: 20px;
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            padding: 40px 30px;
+            border-radius: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 90%;
+            max-width: 350px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
-        h1 {
-            font-size: 2.5rem; margin: 0;
-            background: linear-gradient(45deg, #fff, var(--primary));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+
+        .logo-area i {
+            color: var(--primary);
+            margin-bottom: 15px;
         }
-        input {
-            width: 100%; box-sizing: border-box; padding: 15px; border-radius: 15px;
-            border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2);
-            color: white; font-size: 1rem; text-align: center; margin-top: 20px; outline: none;
+
+        h2 { margin-bottom: 10px; font-weight: 800; }
+        p { color: #888; font-size: 14px; margin-bottom: 30px; }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 20px;
         }
-        input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-glow); }
-        .btn-main {
-            width: 100%; padding: 15px; border-radius: 15px; border: none;
-            background: var(--primary); color: white; font-weight: 600;
-            margin-top: 20px; cursor: pointer; transition: 0.3s;
-            box-shadow: 0 10px 20px var(--primary-glow);
+
+        .input-ia {
+            width: 100%;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid #333;
+            padding: 15px;
+            border-radius: 12px;
+            color: white;
+            font-size: 16px;
+            text-align: center;
+            outline: none;
+            transition: 0.3s;
+            box-sizing: border-box;
         }
-        .btn-visitor {
-            background: transparent; color: #aaa; border: 1px solid rgba(255,255,255,0.1);
-            width: 100%; padding: 12px; border-radius: 15px; margin-top: 15px; cursor: pointer;
+
+        .input-ia:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(138, 43, 226, 0.2);
+        }
+
+        .btn-acessar {
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-acessar:active { transform: scale(0.98); }
+
+        .btn-visitante {
+            margin-top: 15px;
+            background: none;
+            border: none;
+            color: #666;
+            font-size: 13px;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        #login-status {
+            color: #ff4444;
+            font-size: 12px;
+            margin-top: 10px;
+            height: 18px;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
-    <div class="bg-glow"></div>
+
     <div class="login-card">
-        <h1>DT School</h1>
-        <p style="color: #aaa; font-size: 0.9rem;">Organize seus estudos com estilo</p>
-        <input type="tel" id="user-phone" placeholder="(00) 00000-0000">
-        <button onclick="fazerLogin()" class="btn-main">ENTRAR NA NUVEM</button>
-        <div style="margin: 20px 0; color: #555; font-size: 0.8rem;">ou</div>
-        <button onclick="entrarVisitante()" class="btn-visitor">Continuar como Visitante</button>
+        <div class="logo-area">
+            <i data-lucide="shield-check" style="width: 50px; height: 50px;"></i>
+        </div>
+        <h2>DT School</h2>
+        <p>Sincronize suas notas e agenda</p>
+
+        <div class="input-group">
+            <input type="tel" id="login-phone" placeholder="(00) 00000-0000" maxlength="15" class="input-ia">
+            <div id="login-status"></div>
+        </div>
+
+        <button onclick="tentarLogar()" class="btn-acessar">
+            Acessar minha conta <i data-lucide="arrow-right" style="width: 18px;"></i>
+        </button>
+
+        <button onclick="entrarComoVisitante()" class="btn-visitante">
+            Continuar sem sincronizar
+        </button>
     </div>
 
-    <script>
-        function fazerLogin() {
-            const phone = document.getElementById('user-phone').value.trim();
-            if (phone.length < 8) { alert("Digite um número válido!"); return; }
-            localStorage.setItem('dt_user_phone', phone);
-            localStorage.setItem('dt_user_type', 'cloud');
-            window.location.href = 'index.html'; // <--- AGORA VAI PARA AS NOTAS
-        }
-        function entrarVisitante() {
-            localStorage.setItem('dt_user_phone', 'visitante');
-            localStorage.setItem('dt_user_type', 'local');
-            window.location.href = 'index.html'; // <--- AGORA VAI PARA AS NOTAS
-        }
-    </script>
+    <script src="login-logica.js"></script>
+    <script>lucide.createIcons();</script>
 </body>
 </html>
