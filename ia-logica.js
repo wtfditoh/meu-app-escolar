@@ -2,25 +2,35 @@ const API_KEY = "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";
 
 document.addEventListener('DOMContentLoaded', () => {
     lucide.createIcons();
-    // Tenta carregar o histórico de qualquer uma das chaves que usamos antes para garantir
-    const save = localStorage.getItem('dt_chat') || localStorage.getItem('dt_chat_data') || localStorage.getItem('chat_dt');
+    const save = localStorage.getItem('dt_chat_history');
     if(save) document.getElementById('chat-box').innerHTML = save;
 });
 
-// FUNÇÃO DA LIXEIRA CORRIGIDA
-function limparHistorico() {
-    if(confirm("Deseja apagar todo o histórico de conversas?")) {
-        // Limpa todas as possíveis chaves de memória
-        localStorage.removeItem('dt_chat');
-        localStorage.removeItem('dt_chat_data');
-        localStorage.removeItem('chat_dt');
-        
-        // Limpa visualmente a tela
-        document.getElementById('chat-box').innerHTML = '<div class="bolha ia">Olá! Qual sua dúvida de hoje?</div>';
-        
-        // Força o recarregamento para limpar estados da IA
-        window.location.reload();
+// FUNÇÃO PARA SUBSTITUIR O ALERT/CONFIRM DO CHROME
+function mostrarAviso(msg, confirmacao = false, acao = null) {
+    const modal = document.getElementById('custom-modal');
+    const texto = document.getElementById('modal-text');
+    const btnOk = document.getElementById('modal-ok');
+    const btnCancel = document.getElementById('modal-cancel');
+
+    texto.innerText = msg;
+    modal.style.display = 'flex';
+    
+    if (confirmacao) {
+        btnCancel.style.display = 'block';
+        btnOk.onclick = () => { modal.style.display = 'none'; acao(); };
+        btnCancel.onclick = () => { modal.style.display = 'none'; };
+    } else {
+        btnCancel.style.display = 'none';
+        btnOk.onclick = () => { modal.style.display = 'none'; };
     }
+}
+
+function limparHistorico() {
+    mostrarAviso("Deseja apagar o histórico de mensagens?", true, () => {
+        localStorage.removeItem('dt_chat_history');
+        location.reload();
+    });
 }
 
 function showAba(nome) {
@@ -43,11 +53,12 @@ async function callIA(p) {
 
 async function gerarSimulado() {
     const sub = document.getElementById('assunto').value;
-    if(!sub) return alert("Digite o assunto!");
+    if(!sub) return mostrarAviso("⚠️ Por favor, digite o assunto!");
+    
     const lista = document.getElementById('questoes-lista');
-    lista.innerHTML = "<div class='card-ia'>⏳ Elaborando questões e mini aulas...</div>";
+    lista.innerHTML = "<div class='card-ia'>⏳ Criando questões e mini aulas...</div>";
 
-    const prompt = `Gere 10 questões para ${document.getElementById('nivel').value} sobre ${sub}. Retorne APENAS JSON: [{"p":"pergunta","o":["a","b","c","d"],"c":0,"e":"mini aula explicativa"}]`;
+    const prompt = `Gere 10 questões para ${document.getElementById('nivel').value} sobre ${sub}. Retorne APENAS JSON puro: [{"p":"pergunta","o":["a","b","c","d"],"c":0,"e":"mini aula explicativa"}]`;
     
     try {
         const texto = await callIA(prompt);
@@ -73,7 +84,7 @@ async function gerarSimulado() {
                         todos[q.c].style.setProperty('background', '#28a745', 'important');
                     }
                     const aula = document.createElement('div');
-                    aula.style = "margin-top:15px; padding:12px; background:rgba(138,43,226,0.1); border-left:4px solid #8a2be2; font-size:14px;";
+                    aula.style = "margin-top:15px; padding:12px; background:rgba(138,43,226,0.1); border-left:4px solid #8a2be2; font-size:14px; color:#ccc;";
                     aula.innerHTML = `<b>🎓 Mini Aula:</b> ${q.e}`;
                     div.appendChild(aula);
                 };
@@ -81,7 +92,7 @@ async function gerarSimulado() {
             });
             lista.appendChild(div);
         });
-    } catch(e) { lista.innerHTML = "<div class='card-ia'>Erro ao carregar. Tente novamente.</div>"; }
+    } catch(e) { lista.innerHTML = "<div class='card-ia'>Erro ao carregar questões. Tente novamente.</div>"; }
 }
 
 async function enviarMsg() {
@@ -93,9 +104,8 @@ async function enviarMsg() {
     box.innerHTML += `<div class="bolha user">${val}</div>`;
     window.scrollTo(0, document.body.scrollHeight);
 
-    const r = await callIA(`Responda de forma didática e curta: ${val}`);
+    const r = await callIA(`Responda de forma curta e didática: ${val}`);
     box.innerHTML += `<div class="bolha ia">${r}</div>`;
-    // Salva na chave principal
-    localStorage.setItem('dt_chat', box.innerHTML);
+    localStorage.setItem('dt_chat_history', box.innerHTML);
     window.scrollTo(0, document.body.scrollHeight);
 }
