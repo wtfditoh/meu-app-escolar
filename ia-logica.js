@@ -1,29 +1,25 @@
 const API_KEY = "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";
 
-// Inicialização
+// Carregar histórico ao abrir
 document.addEventListener('DOMContentLoaded', () => {
     lucide.createIcons();
     const salvo = localStorage.getItem('dt_chat_data');
     if (salvo) document.getElementById('chat-respostas').innerHTML = salvo;
 });
 
-// Mensagem Bonita (Toast)
-function mostrarAviso(msg) {
+function mostrarToast(txt) {
     const t = document.getElementById('custom-toast');
-    t.innerText = msg;
-    t.style.bottom = "30px";
-    setTimeout(() => { t.style.bottom = "-100px"; }, 3000);
+    t.innerText = txt; t.style.top = "20px";
+    setTimeout(() => { t.style.top = "-100px"; }, 3000);
 }
 
-// Limpar conversa
-function limparChat() {
-    if(confirm("Deseja apagar todo o histórico de dúvidas?")) {
+function limparHistorico() {
+    if(confirm("Apagar toda a conversa?")) {
         localStorage.removeItem('dt_chat_data');
-        document.getElementById('chat-respostas').innerHTML = '<div class="msg-ia">Conversa reiniciada. Como posso ajudar?</div>';
+        document.getElementById('chat-respostas').innerHTML = '<div class="msg-ia">Conversa reiniciada.</div>';
     }
 }
 
-// Chamar Groq IA
 async function chamarIA(p) {
     const r = await fetch("https://api.groq.com/openai/v1/chat/completions", {
         method: "POST",
@@ -34,45 +30,45 @@ async function chamarIA(p) {
     return d.choices[0].message.content;
 }
 
-// Lógica de Simulado (10 questões + Nível)
+// SIMULADO
 async function gerarQuestoes() {
     const assunto = document.getElementById('assunto-ia').value;
     const nivel = document.getElementById('nivel-ia').value;
-    if(!assunto) return mostrarAviso("Digite o assunto primeiro!");
+    if(!assunto) return mostrarToast("Por favor, digite o assunto!");
 
     const btn = document.getElementById('btn-gerar');
-    btn.innerText = "Criando..."; btn.disabled = true;
+    btn.innerText = "Gerando..."; btn.disabled = true;
 
     try {
-        const prompt = `Gere 10 questões de ${nivel} sobre ${assunto}. Retorne apenas JSON: [{"p":"pergunta","o":["a","b","c","d"],"c":0,"e":"explicação"}]`;
+        const prompt = `Gere 10 questões de múltipla escolha para ${nivel} sobre ${assunto}. Retorne APENAS JSON: [{"p":"pergunta","o":["a","b","c","d"],"c":0,"e":"explicação"}]`;
         const res = await chamarIA(prompt);
         const questoes = JSON.parse(res.replace(/```json|```/g, ""));
         
-        const container = document.getElementById('container-questoes');
-        container.innerHTML = `<h3 style='margin:20px 0;'>Simulado: ${assunto}</h3>`;
+        const cont = document.getElementById('container-questoes');
+        cont.innerHTML = `<h3 style='color:var(--primary); margin:20px 0;'>Simulado: ${assunto}</h3>`;
         questoes.forEach((q, i) => {
             const d = document.createElement('div');
-            d.className = "questao-card";
-            d.innerHTML = `<p><b>${i+1}.</b> ${q.p}</p>` + 
-                q.o.map((opt, idx) => `<button class="opcao-btn" onclick="validar(this,${idx},${q.c},'${q.e}')">${opt}</button>`).join('');
-            container.appendChild(d);
+            d.innerHTML = `<div style='margin-bottom:20px;'><p><strong>${i+1}.</strong> ${q.p}</p>` + 
+                q.o.map((opt, idx) => `<button class="opcao-btn" onclick="validar(this,${idx},${q.c},'${q.e}')">${opt}</button>`).join('') + `</div>`;
+            cont.appendChild(d);
         });
-    } catch(e) { mostrarAviso("Erro na IA. Tente de novo."); }
+    } catch(e) { mostrarToast("Erro na IA. Tente de novo."); }
     finally { btn.innerText = "Gerar 10 Questões"; btn.disabled = false; }
 }
 
 function validar(btn, sel, cor, exp) {
-    const btns = btn.parentElement.querySelectorAll('.opcao-btn');
+    const pai = btn.parentElement;
+    const btns = pai.querySelectorAll('.opcao-btn');
     btns.forEach(b => b.disabled = true);
-    btn.style.borderColor = (sel === cor) ? "#00ff7f" : "#ff4444";
-    btns[cor].style.borderColor = "#00ff7f";
-    const f = document.createElement('div');
-    f.style = "margin-top:10px; color:#aaa; font-size:12px;";
-    f.innerHTML = `<b>Dica:</b> ${exp}`;
-    btn.parentElement.appendChild(f);
+    btn.style.border = (sel === cor) ? "2px solid #00ff7f" : "2px solid #ff4444";
+    btns[cor].style.border = "2px solid #00ff7f";
+    const f = document.createElement('p');
+    f.style = "font-size:12px; color:#888; margin-top:10px;";
+    f.innerHTML = `<strong>Explicação:</strong> ${exp}`;
+    pai.appendChild(f);
 }
 
-// Tira-Dúvidas (Com Memória e Scroll para voltar)
+// CHAT COM SCROLL
 async function perguntarIA() {
     const input = document.getElementById('pergunta-ia');
     const box = document.getElementById('chat-respostas');
@@ -83,17 +79,16 @@ async function perguntarIA() {
     box.innerHTML += `<div class="msg-user">${msg}</div>`;
     box.scrollTop = box.scrollHeight;
 
-    const res = await chamarIA(`Responda de forma curta para aluno de escola: ${msg}`);
+    const res = await chamarIA(`Responda de forma curta para um estudante: ${msg}`);
     box.innerHTML += `<div class="msg-ia">${res}</div>`;
     box.scrollTop = box.scrollHeight;
     localStorage.setItem('dt_chat_data', box.innerHTML);
 }
 
-// Troca de Aba
 function trocarAba(aba) {
     const isSim = aba === 'simulado';
     document.getElementById('secao-simulado').classList.toggle('active', isSim);
     document.getElementById('secao-chat').classList.toggle('active', !isSim);
-    document.getElementById('tab-simulado').classList.toggle('active', isSim);
-    document.getElementById('tab-chat').classList.toggle('active', !isSim);
+    document.getElementById('t-sim').classList.toggle('active', isSim);
+    document.getElementById('t-chat').classList.toggle('active', !isSim);
 }
