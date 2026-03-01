@@ -130,13 +130,9 @@ function alternarConcluida(id) {
     }
 }
 
-// NOVA FUNÇÃO PARA EXPANDIR O TEXTO
+// FUNÇÃO PARA EXPANDIR O TEXTO CLICADO
 function expandirTexto(el) {
-    if (el.style.webkitLineClamp === "none") {
-        el.style.webkitLineClamp = "3";
-    } else {
-        el.style.webkitLineClamp = "none";
-    }
+    el.classList.toggle('expandido');
 }
 
 function carregarTarefas(filtroData = null) {
@@ -149,7 +145,7 @@ function carregarTarefas(filtroData = null) {
         agenda = agenda.filter(t => filtroData >= t.dataInicio && filtroData <= t.dataFim);
         titulo.innerText = "Atividades em " + filtroData.split('-').reverse().join('/');
     } else {
-        titulo.innerText = "Todos os Compromissos";
+        titulo.innerText = "Todas as Atividades";
     }
 
     if (agenda.length === 0) {
@@ -157,6 +153,7 @@ function carregarTarefas(filtroData = null) {
         return;
     }
 
+    // ORDENAÇÃO: PENDENTES PRIMEIRO, CONCLUÍDAS POR ÚLTIMO
     agenda.sort((a, b) => {
         if (a.concluida !== b.concluida) return a.concluida ? 1 : -1; 
         return new Date(a.dataFim) - new Date(b.dataFim);
@@ -184,31 +181,19 @@ function carregarTarefas(filtroData = null) {
         return `
         <div class="tarefa-item" style="border-left: 5px solid ${corStatus}; opacity: ${t.concluida ? '0.5' : '1'};">
             <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                <div style="flex: 1;">
-                    <span style="background:var(--primary); font-size:10px; padding:3px 8px; border-radius:5px; font-weight:bold; color:white;">${t.materia}</span>
+                <div style="flex: 1; min-width: 0;"> <span style="background:var(--primary); font-size:10px; padding:3px 8px; border-radius:5px; font-weight:bold; color:white;">${t.materia}</span>
                     <b onclick="alternarConcluida(${t.id})" style="display:block; margin-top:8px; font-size:18px; color:white; text-decoration: ${t.concluida ? 'line-through' : 'none'}; cursor:pointer;">
                         ${t.nome}
                     </b>
                     
                     ${t.descricao ? `
-                        <p onclick="expandirTexto(this)" style="
-                            font-size:13px; 
-                            color:#ddd; 
-                            margin: 8px 0; 
-                            line-height:1.4;
-                            display: -webkit-box;
-                            -webkit-line-clamp: 3;
-                            -webkit-box-orient: vertical;
-                            overflow: hidden;
-                            cursor: pointer;
-                            transition: all 0.3s;
-                        ">${t.descricao}</p>
+                        <p onclick="expandirTexto(this)" class="tarefa-desc-texto">${t.descricao}</p>
                     ` : ''}
                     
                     <div style="margin-top:5px; font-size:11px; color:#aaa;">Prazo: ${t.dataFim.split('-').reverse().join('/')}</div>
                     <div style="margin-top:5px; color:${corStatus}; font-weight:bold; font-size:12px;">${textoStatus}</div>
                 </div>
-                <div style="display:flex; gap: 8px;">
+                <div class="area-acoes">
                     <button onclick="alternarConcluida(${t.id})" style="background:rgba(0,210,255,0.1); border:none; color:#00d2ff; padding:8px; border-radius:10px;">
                         <i data-lucide="${t.concluida ? 'rotate-ccw' : 'check-circle'}" style="width:18px;"></i>
                     </button>
