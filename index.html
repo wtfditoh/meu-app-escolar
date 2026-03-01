@@ -2,32 +2,97 @@
 <html lang="pt-br">
 <head>
     <script>
-    // Verifica se existe um número ou "visitante" salvo
     if (!localStorage.getItem('dt_user_phone')) {
-        // Se não tiver nada, manda para o login automaticamente
         window.location.href = 'login.html';
     }
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DT School Pro</title>
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <title>Hub Brain - Inteligência Escolar</title> <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="stylesheet" href="estilo.css?v=12.0">
+    <style>
+        /* CSS Específico para o novo topo atraente */
+        .glass-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 15px;
+            height: 70px;
+            background: rgba(10, 10, 10, 0.8) !important;
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(138, 43, 226, 0.2);
+        }
+
+        .hub-logo-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            pointer-events: none;
+        }
+
+        .hub-logo-text {
+            font-weight: 900;
+            font-size: 19px;
+            letter-spacing: 1px;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        .hub-logo-text.purple {
+            color: #8a2be2;
+            text-shadow: 0 0 10px rgba(138, 43, 226, 0.3);
+        }
+
+        .hub-symbol {
+            background: rgba(138, 43, 226, 0.1);
+            padding: 6px;
+            border-radius: 10px;
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse-glow 3s infinite ease-in-out;
+        }
+
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 0px rgba(138, 43, 226, 0); transform: scale(1); }
+            50% { box-shadow: 0 0 15px rgba(138, 43, 226, 0.4); transform: scale(1.05); }
+            100% { box-shadow: 0 0 0px rgba(138, 43, 226, 0); transform: scale(1); }
+        }
+
+        /* Ajuste do botão "+" para combinar com o novo topo */
+        .btn-add-main {
+            background: #8a2be2 !important;
+            width: 38px !important;
+            height: 38px !important;
+            border-radius: 12px !important;
+            font-size: 24px !important;
+            box-shadow: 0 4px 15px rgba(138, 43, 226, 0.3);
+        }
+    </style>
 </head>
 <body>
     <div id="overlay" onclick="toggleMenu()"></div>
 
     <header class="glass-header">
         <button onclick="toggleMenu()" class="btn-icon"><i data-lucide="menu"></i></button>
-        <h1 class="topo-compacto"><span class="logo-dot"></span>DT School</h1>
+        
+        <div class="hub-logo-container">
+            <span class="hub-logo-text">Hub</span>
+            <div class="hub-symbol">
+                <i data-lucide="brain-circuit" style="color: #8a2be2; width: 22px; height: 22px;"></i>
+            </div>
+            <span class="hub-logo-text purple">Brain</span>
+        </div>
+
         <button onclick="abrirModal()" class="btn-add-main">+</button>
     </header>
 
     <nav id="menu-lateral" class="drawer">
         <div class="drawer-header">
             <div class="logo-box">
-                <span class="logo-dot"></span>
-                <span class="logo-text">DT SCHOOL</span>
+                <i data-lucide="brain-circuit" style="color: #8a2be2; width: 18px; margin-right: 5px;"></i>
+                <span class="logo-text" style="letter-spacing: 1px;">HUB <span style="color: #8a2be2;">BRAIN</span></span>
             </div>
             <button onclick="toggleMenu()" class="btn-close-box"><i data-lucide="x"></i></button>
         </div>
@@ -43,9 +108,9 @@
             <i data-lucide="book-open"></i> Estudar com IA
         </button>
 
-<button onclick="localStorage.clear(); window.location.href='login.html';" class="nav-item" style="color: #ff4444; margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
-    <i data-lucide="log-out"></i> Sair / Trocar Conta
-</button>
+        <button onclick="localStorage.clear(); window.location.href='login.html';" class="nav-item" style="color: #ff4444; margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
+            <i data-lucide="log-out"></i> Sair / Trocar Conta
+        </button>
     </nav>
 
     <main class="container">
@@ -93,7 +158,6 @@
 
     <script type="module" src="funcoes.js?v=12.0"></script>
     <script>
-        // Isso garante que os ícones apareçam assim que a página carregar
         document.addEventListener('DOMContentLoaded', function() {
             lucide.createIcons();
         });
