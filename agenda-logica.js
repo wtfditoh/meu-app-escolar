@@ -8,20 +8,16 @@ document.addEventListener('DOMContentLoaded', () => {
     carregarTarefas();
 });
 
-// BUSCA AS MATÉRIAS DAS NOTAS (TELA INICIAL)
 function carregarMateriasNoSelect() {
     const select = document.getElementById('tarefa-materia');
     const materiasSalvas = localStorage.getItem('materias_db') || localStorage.getItem('materias');
     const materiasDB = JSON.parse(materiasSalvas || '[]');
-    
     select.innerHTML = '<option value="Geral">Geral / Outros</option>';
-    
     if (materiasDB.length > 0) {
         materiasDB.forEach(m => {
             if(m.nome) {
                 const opt = document.createElement('option');
-                opt.value = m.nome; 
-                opt.textContent = m.nome;
+                opt.value = m.nome; opt.textContent = m.nome;
                 select.appendChild(opt);
             }
         });
@@ -32,7 +28,6 @@ function renderizarCalendario() {
     const grid = document.getElementById('calendar-grid');
     const topoMes = document.getElementById('mes-topo');
     grid.innerHTML = "";
-
     const nomesDias = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
     nomesDias.forEach(d => grid.innerHTML += `<div class="dia-semana">${d}</div>`);
 
@@ -48,7 +43,6 @@ function renderizarCalendario() {
 
     for (let dia = 1; dia <= diasNoMes; dia++) {
         const dataStr = `${ano}-${String(mes + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
-        // O ponto aparece se o dia estiver dentro do intervalo da tarefa
         const temTarefa = agenda.some(t => dataStr >= t.dataInicio && dataStr <= t.dataFim);
         const hoje = new Date().toISOString().split('T')[0] === dataStr ? 'hoje' : '';
         const sel = dataSelecionada === dataStr ? 'selecionado' : '';
@@ -110,14 +104,11 @@ function adicionarTarefa() {
         const txt = btnSalvar.innerText;
         btnSalvar.innerText = "Preencha tudo!";
         btnSalvar.style.backgroundColor = "#ff4444";
-        setTimeout(() => { 
-            btnSalvar.innerText = txt; 
-            btnSalvar.style.backgroundColor = "#8a2be2"; 
-        }, 2000);
+        setTimeout(() => { btnSalvar.innerText = txt; btnSalvar.style.backgroundColor = "#8a2be2"; }, 2000);
         return;
     }
 
-    const nova = { id: Date.now(), nome, dataInicio, dataFim, materia, imagem: imagemBase64 };
+    const nova = { id: Date.now(), nome, dataInicio, dataFim, materia, imagem: imagemBase64, concluida: false };
     let agenda = JSON.parse(localStorage.getItem('dt_agenda') || '[]');
     agenda.push(nova);
     localStorage.setItem('dt_agenda', JSON.stringify(agenda));
@@ -125,6 +116,16 @@ function adicionarTarefa() {
     fecharModalAgenda();
     renderizarCalendario();
     carregarTarefas(dataFim);
+}
+
+function alternarConcluida(id) {
+    let agenda = JSON.parse(localStorage.getItem('dt_agenda') || '[]');
+    const index = agenda.findIndex(t => t.id === id);
+    if (index !== -1) {
+        agenda[index].concluida = !agenda[index].concluida;
+        localStorage.setItem('dt_agenda', JSON.stringify(agenda));
+        carregarTarefas(dataSelecionada);
+    }
 }
 
 function carregarTarefas(filtroData = null) {
@@ -137,7 +138,7 @@ function carregarTarefas(filtroData = null) {
         agenda = agenda.filter(t => filtroData >= t.dataInicio && filtroData <= t.dataFim);
         titulo.innerText = "Atividades em " + filtroData.split('-').reverse().join('/');
     } else {
-        titulo.innerText = "Todos os Compromissos";
+        titulo.innerText = "Todas as Atividades";
     }
 
     if (agenda.length === 0) {
@@ -148,42 +149,49 @@ function carregarTarefas(filtroData = null) {
     agenda.sort((a, b) => new Date(a.dataFim) - new Date(b.dataFim));
 
     lista.innerHTML = agenda.map(t => {
-        // CÁLCULO DO PRAZO
         const fim = new Date(t.dataFim + "T00:00:00");
         const hoje = new Date(hojeStr + "T00:00:00");
         const diffTime = fim - hoje;
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
         
-        let corStatus = "#00C851"; // Verde (> 7 dias)
-        let textoStatus = `Prazo tranquilo: ${diffDays} dias`;
+        let corStatus = "#00C851"; 
+        let textoStatus = `Faltam ${diffDays} dias`;
 
-        if (diffDays < 0) {
-            corStatus = "#666"; // Cinza (Atrasado)
+        if (t.concluida) {
+            corStatus = "#00d2ff"; // Azul para concluído
+            textoStatus = "CONCLUÍDO! 🎉";
+        } else if (diffDays < 0) {
+            corStatus = "#666"; 
             textoStatus = "PRAZO ENCERRADO";
         } else if (diffDays <= 3) {
-            corStatus = "#ff4444"; // Vermelho (0 a 3 dias)
+            corStatus = "#ff4444"; 
             textoStatus = diffDays === 0 ? "ENTREGA HOJE!" : `URGENTE: Faltam ${diffDays} dias`;
         } else if (diffDays <= 7) {
-            corStatus = "#ffbb33"; // Amarelo (4 a 7 dias)
+            corStatus = "#ffbb33"; 
             textoStatus = `ATENÇÃO: Faltam ${diffDays} dias`;
         }
 
         return `
-        <div class="tarefa-item" style="border-left: 5px solid ${corStatus};">
+        <div class="tarefa-item" style="border-left: 5px solid ${corStatus}; opacity: ${t.concluida ? '0.5' : '1'};">
             <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                <div>
+                <div onclick="alternarConcluida(${t.id})" style="cursor:pointer; flex: 1;">
                     <span style="background:var(--primary); font-size:10px; padding:3px 8px; border-radius:5px; font-weight:bold; color:white;">${t.materia}</span>
-                    <b style="display:block; margin-top:8px; font-size:18px; color:white;">${t.nome}</b>
-                    <div style="margin-top:5px; font-size:11px; color:#aaa;">
-                        Prazo: ${t.dataFim.split('-').reverse().join('/')}
-                    </div>
+                    <b style="display:block; margin-top:8px; font-size:18px; color:white; text-decoration: ${t.concluida ? 'line-through' : 'none'};">
+                        ${t.nome}
+                    </b>
+                    <div style="margin-top:5px; font-size:11px; color:#aaa;">Prazo: ${t.dataFim.split('-').reverse().join('/')}</div>
                     <div style="margin-top:5px; color:${corStatus}; font-weight:bold; font-size:12px;">${textoStatus}</div>
                 </div>
-                <button onclick="removerTarefa(${t.id})" style="background:rgba(255,68,68,0.1); border:none; color:#ff4444; padding:8px; border-radius:10px;">
-                    <i data-lucide="trash-2" style="width:18px;"></i>
-                </button>
+                <div style="display:flex; gap: 5px;">
+                    <button onclick="alternarConcluida(${t.id})" style="background:rgba(0,210,255,0.1); border:none; color:#00d2ff; padding:8px; border-radius:10px;">
+                        <i data-lucide="${t.concluida ? 'rotate-ccw' : 'check-circle'}" style="width:18px;"></i>
+                    </button>
+                    <button onclick="removerTarefa(${t.id})" style="background:rgba(255,68,68,0.1); border:none; color:#ff4444; padding:8px; border-radius:10px;">
+                        <i data-lucide="trash-2" style="width:18px;"></i>
+                    </button>
+                </div>
             </div>
-            ${t.imagem ? `<img src="${t.imagem}" style="width:100%; border-radius:15px; margin-top:15px; border: 1px solid rgba(255,255,255,0.1);">` : ''}
+            ${t.imagem ? `<img src="${t.imagem}" style="width:100%; border-radius:15px; margin-top:15px; border: 1px solid rgba(255,255,255,0.1); filter: ${t.concluida ? 'grayscale(100%)' : 'none'};">` : ''}
         </div>`;
     }).join('');
     lucide.createIcons();
@@ -195,4 +203,4 @@ function removerTarefa(id) {
     localStorage.setItem('dt_agenda', JSON.stringify(agenda));
     renderizarCalendario();
     carregarTarefas(dataSelecionada);
-}
+                            }
