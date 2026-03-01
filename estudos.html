@@ -25,26 +25,38 @@
     <main class="main-content">
         <section id="aba-simulado" class="aba-painel active">
             <div class="card-ia">
-                <input type="text" id="assunto" placeholder="Ex: Revolução Francesa">
+                <input type="text" id="assunto" placeholder="Ex: Egito Antigo">
                 <select id="nivel">
                     <option value="Ensino Médio">Ensino Médio</option>
                     <option value="ENEM">ENEM / Vestibular</option>
                 </select>
-                <button class="btn-principal" onclick="gerarSimulado()">Gerar 10 Questões</button>
+                <button class="btn-principal" onclick="gerarSimulado()">GERAR QUESTÕES</button>
             </div>
             <div id="questoes-lista"></div>
         </section>
 
         <section id="aba-chat" class="aba-painel">
             <div id="chat-box" class="chat-log">
-                <div class="bolha ia">Olá! Qual sua dúvida de hoje?</div>
+                <div class="bolha ia">Olá! Mande sua dúvida sobre qualquer matéria.</div>
             </div>
             <div class="chat-input-area">
-                <input type="text" id="chat-in" placeholder="Sua dúvida..." onkeypress="if(event.key==='Enter') enviarMsg()" style="margin:0; border:none !important; background:transparent !important;">
-                <button onclick="enviarMsg()" style="background:var(--roxo-vibrante); border:none; width:45px; height:45px; border-radius:50%; color:white;"><i data-lucide="send"></i></button>
+                <input type="text" id="chat-in" placeholder="Manda sua dúvida..." onkeypress="if(event.key==='Enter') enviarMsg()">
+                <button onclick="enviarMsg()" style="background:var(--roxo-vibrante); border:none; width:45px; height:45px; border-radius:50%; color:white; display:flex; align-items:center; justify-content:center;">
+                    <i data-lucide="send" style="width:20px;"></i>
+                </button>
             </div>
         </section>
     </main>
+
+    <div id="custom-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:9999; align-items:center; justify-content:center; padding:20px; backdrop-filter: blur(5px);">
+        <div class="card-ia" style="max-width:350px; width:100%; text-align:center; border: 2px solid var(--roxo-vibrante);">
+            <p id="modal-text" style="margin-bottom:25px; font-size:17px; line-height:1.4;"></p>
+            <div style="display:flex; gap:12px;">
+                <button id="modal-cancel" class="tab-btn" style="display:none; padding:10px !important;">Voltar</button>
+                <button id="modal-ok" class="btn-principal" style="padding:10px !important; font-size:14px;">Confirmar</button>
+            </div>
+        </div>
+    </div>
 
     <script src="ia-logica.js"></script>
 </body>
