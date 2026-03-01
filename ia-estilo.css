@@ -1,48 +1,36 @@
 :root {
     --roxo: #8a2be2;
-    --roxo-brilho: #a066ff;
     --fundo: #0a0515;
+    --cinza: #1a1a1a;
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
 
-body { background-color: var(--fundo) !important; color: white !important; }
+body { background: var(--fundo) !important; color: white !important; }
 
-/* Topo e Lixeira */
-.dt-topo { 
-    display: flex; justify-content: space-between; align-items: center; 
-    padding: 15px; border-bottom: 1px solid rgba(138, 43, 226, 0.3); background: #110a20;
+/* FIX: ABAS NÃO FICAREM BRANCAS */
+.dt-abas-box { display: flex; gap: 10px; padding: 15px; background: var(--fundo); }
+.dt-tab {
+    flex: 1; padding: 12px; border-radius: 12px; border: 1px solid rgba(138, 43, 226, 0.3);
+    background: #150a25 !important; color: #888 !important; font-weight: bold; cursor: pointer;
 }
-.dt-lixeira { background: transparent !important; border: none !important; color: #666 !important; cursor: pointer; }
+.dt-tab.active { background: var(--roxo) !important; color: white !important; border: none; }
 
-/* Cards e Inputs */
-.dt-container { padding: 15px; }
-.dt-card { 
-    background: rgba(30, 20, 50, 0.5); border: 1px solid rgba(138, 43, 226, 0.3); 
-    border-radius: 20px; padding: 20px; margin-bottom: 20px; 
-}
-
-/* BOTÕES DAS OPÇÕES - CORRIGIDO PARA NÃO SER ROXO POR PADRÃO */
+/* BOTÕES DE OPÇÕES (QUESTÕES) */
 .dt-opt-btn {
     width: 100%; text-align: left; padding: 15px; margin-top: 10px;
-    background-color: #1a1a1a !important; /* Cor grafite neutra */
-    color: white !important; 
-    border: 1px solid #333 !important;
-    border-radius: 12px; cursor: pointer; font-size: 15px;
+    background: var(--cinza) !important; color: white !important;
+    border: 1px solid #333 !important; border-radius: 10px; cursor: pointer;
 }
 
-/* MINI AULA - ESTILO REFORÇADO */
+/* MINI AULA */
 .dt-mini-aula {
-    margin-top: 15px; padding: 15px; border-radius: 12px;
-    background: rgba(138, 43, 226, 0.1) !important; 
-    border-left: 5px solid var(--roxo) !important;
-    font-size: 14px; line-height: 1.6; color: #ddd !important;
-    display: block !important;
+    margin-top: 15px; padding: 15px; border-radius: 10px;
+    background: rgba(138, 43, 226, 0.1) !important;
+    border-left: 4px solid var(--roxo) !important;
+    font-size: 14px; color: #eee !important;
 }
 
-/* Botão de Gerar Simulado (Este continua roxo) */
-.dt-btn-gerar {
-    width: 100%; padding: 16px; border-radius: 12px; border: none;
-    background: linear-gradient(90deg, #8a2be2, #a066ff) !important;
-    color: #fff !important; font-weight: bold; cursor: pointer;
-}
+/* OUTROS AJUSTES */
+.dt-card { background: rgba(30, 20, 50, 0.5); border: 1px solid rgba(138, 43, 226, 0.3); border-radius: 20px; padding: 20px; margin-bottom: 20px; }
+.dt-btn-gerar { width: 100%; padding: 16px; border-radius: 12px; border: none; background: linear-gradient(90deg, #8a2be2, #a066ff) !important; color: #fff !important; font-weight: bold; }
