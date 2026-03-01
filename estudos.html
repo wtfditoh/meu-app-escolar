@@ -9,9 +9,21 @@
 </head>
 <body>
 
+    <div id="menu-lateral" class="dt-sidebar">
+        <button class="dt-close-menu" onclick="toggleMenu()">×</button>
+        <div class="dt-menu-items">
+            <button onclick="alternarAba('simulado')"><i data-lucide="graduation-cap"></i> Simulado</button>
+            <button onclick="alternarAba('chat')"><i data-lucide="message-square"></i> Tira-Dúvidas</button>
+            <button onclick="abrirNotas()"><i data-lucide="book-open"></i> Minhas Notas</button>
+        </div>
+    </div>
+
     <header class="dt-header">
+        <button class="dt-menu-btn" onclick="toggleMenu()">
+            <i data-lucide="menu"></i>
+        </button>
         <div class="dt-logo">DT Educator</div>
-        <button class="dt-btn-lixeira" onclick="limparTudo()" title="Limpar tudo">
+        <button class="dt-btn-lixeira" onclick="limparTudo()">
             <i data-lucide="trash-2"></i>
         </button>
     </header>
@@ -22,26 +34,34 @@
     </nav>
 
     <main class="dt-main-content">
-        
         <section id="painel-simulado" class="dt-section active">
             <div class="dt-card-input">
-                <label class="dt-label">O que vamos estudar hoje?</label>
-                <input type="text" id="campo-tema" placeholder="Ex: História do Brasil, Álgebra..." class="dt-input-dark">
-                
-                <label class="dt-label">Nível de dificuldade</label>
+                <input type="text" id="campo-tema" placeholder="Qual o assunto hoje?" class="dt-input-dark">
                 <select id="campo-nivel" class="dt-input-dark">
-                    <option value="Fundamental">Ensino Fundamental</option>
-                    <option value="Medio">Ensino Médio / ENEM</option>
+                    <option value="Medio">Ensino Médio</option>
                     <option value="Superior">Ensino Superior</option>
                 </select>
-                
                 <button class="dt-btn-principal" onclick="gerarSimulado()">GERAR QUESTÕES</button>
             </div>
-            
             <div id="container-questoes"></div>
         </section>
 
         <section id="painel-chat" class="dt-section">
-            <div id="chat-box" class="dt-chat-container">
-                <div class="dt
-                    
+            <div id="chat-box" class="dt-chat-container"></div>
+            <div class="dt-chat-input-area">
+                <input type="text" id="chat-input" placeholder="Dúvida...">
+                <button onclick="enviarMensagem()" class="dt-btn-send"><i data-lucide="send"></i></button>
+            </div>
+        </section>
+    </main>
+
+    <div id="modal-aviso" class="dt-modal-overlay">
+        <div class="dt-modal-box">
+            <p id="modal-texto-msg"></p>
+            <button class="dt-btn-principal" onclick="fecharModal()">OK</button>
+        </div>
+    </div>
+
+    <script src="ia-logica.js"></script>
+</body>
+</html>
