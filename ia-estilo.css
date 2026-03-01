@@ -1,36 +1,46 @@
 :root {
     --roxo: #8a2be2;
     --fundo: #0a0515;
-    --cinza: #1a1a1a;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
 
 body { background: var(--fundo) !important; color: white !important; }
 
-/* FIX: ABAS NÃO FICAREM BRANCAS */
+/* FIX: CAMPO DE ASSUNTO (Tirar o fundo branco) */
+.dt-input, .dt-select {
+    width: 100% !important;
+    background: #000000 !important; /* Força fundo preto */
+    color: #ffffff !important;
+    border: 1px solid #444 !important;
+    padding: 15px !important;
+    border-radius: 12px !important;
+    margin-bottom: 10px !important;
+    display: block !important;
+}
+
+/* FIX: ABAS (Simulado vs Tira-Dúvidas) */
 .dt-abas-box { display: flex; gap: 10px; padding: 15px; background: var(--fundo); }
 .dt-tab {
-    flex: 1; padding: 12px; border-radius: 12px; border: 1px solid rgba(138, 43, 226, 0.3);
-    background: #150a25 !important; color: #888 !important; font-weight: bold; cursor: pointer;
+    flex: 1; padding: 12px; border-radius: 12px;
+    background: #1a1a1a !important; color: #888 !important;
+    border: 1px solid #333 !important; font-weight: bold; cursor: pointer;
 }
-.dt-tab.active { background: var(--roxo) !important; color: white !important; border: none; }
+.dt-tab.active { background: var(--roxo) !important; color: white !important; border: none !important; }
 
-/* BOTÕES DE OPÇÕES (QUESTÕES) */
-.dt-opt-btn {
-    width: 100%; text-align: left; padding: 15px; margin-top: 10px;
-    background: var(--cinza) !important; color: white !important;
-    border: 1px solid #333 !important; border-radius: 10px; cursor: pointer;
-}
+/* ESCONDER O QUE NÃO É DA ABA ATUAL */
+.dt-painel { display: none; }
+.dt-painel.active { display: block !important; }
 
-/* MINI AULA */
-.dt-mini-aula {
-    margin-top: 15px; padding: 15px; border-radius: 10px;
-    background: rgba(138, 43, 226, 0.1) !important;
-    border-left: 4px solid var(--roxo) !important;
-    font-size: 14px; color: #eee !important;
+/* FIX: BOTÃO OK (Esconder o modal por padrão) */
+.dt-modal {
+    display: none; /* COMEÇA ESCONDIDO */
+    position: fixed !important; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.9); z-index: 9999;
+    align-items: center; justify-content: center;
 }
 
-/* OUTROS AJUSTES */
+/* OUTROS ESTILOS */
 .dt-card { background: rgba(30, 20, 50, 0.5); border: 1px solid rgba(138, 43, 226, 0.3); border-radius: 20px; padding: 20px; margin-bottom: 20px; }
-.dt-btn-gerar { width: 100%; padding: 16px; border-radius: 12px; border: none; background: linear-gradient(90deg, #8a2be2, #a066ff) !important; color: #fff !important; font-weight: bold; }
+.dt-opt-btn { width: 100%; text-align: left; padding: 15px; margin-top: 10px; background: #1a1a1a !important; color: white !important; border: 1px solid #333 !important; border-radius: 10px; }
+.dt-mini-aula { margin-top: 15px; padding: 15px; border-radius: 10px; background: rgba(138, 43, 226, 0.1); border-left: 4px solid var(--roxo); font-size: 14px; color: #eee; }
