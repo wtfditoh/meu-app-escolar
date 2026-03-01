@@ -1,6 +1,13 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
+    <script>
+    // Verifica se existe um número ou "visitante" salvo
+    if (!localStorage.getItem('dt_user_phone')) {
+        // Se não tiver nada, manda para o login automaticamente
+        window.location.href = 'login.html';
+    }
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>DT School Pro</title>
