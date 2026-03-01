@@ -1,73 +1,72 @@
-/* RESET TOTAL PARA EVITAR BOTÕES BRANCOS */
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
-
+/* FORÇANDO O FUNDO E TEXTO PARA NÃO FICAR BRANCO */
 body {
-    background: #0a0515 !important; /* Fundo escuro fixo */
+    background: #0a0515 !important;
     color: #ffffff !important;
-    min-height: 100vh;
+    margin: 0;
+    font-family: sans-serif;
 }
 
-/* HEADER E LIXEIRA */
+/* HEADER E LIXEIRA SEM FUNDO BRANCO */
 .dt-topo {
-    position: sticky; top: 0; z-index: 999;
-    background: rgba(15, 10, 25, 0.95); backdrop-filter: blur(10px);
-    border-bottom: 1px solid rgba(138, 43, 226, 0.3);
-    padding: 10px 20px; display: flex; align-items: center; justify-content: space-between;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 15px !important;
+    background: rgba(20, 10, 30, 0.9) !important;
+    border-bottom: 1px solid #8a2be2 !important;
 }
 
-.dt-lixeira { 
-    background: transparent !important; border: none !important; 
-    color: #666 !important; cursor: pointer; padding: 5px;
+.dt-lixeira {
+    background: transparent !important;
+    border: none !important;
+    color: #666 !important;
+    cursor: pointer !important;
 }
 
-/* ABAS */
-.dt-abas-box { display: flex; gap: 10px; padding: 15px; }
-.dt-tab {
-    flex: 1; padding: 12px; border-radius: 12px; border: 1px solid rgba(138, 43, 226, 0.3);
-    background: rgba(255, 255, 255, 0.05); color: #888; font-weight: bold; cursor: pointer;
-}
-.dt-tab.active { background: #8a2be2; color: #fff; border: none; }
-
-/* CONTEÚDO E CARDS */
-.dt-container { padding: 15px; }
-.dt-painel { display: none; }
-.dt-painel.active { display: block; }
-
-.dt-card {
-    background: rgba(30, 20, 50, 0.5); border: 1px solid rgba(138, 43, 226, 0.3);
-    border-radius: 20px; padding: 20px; margin-bottom: 20px;
-}
-
-/* INPUTS E BOTÕES (FORÇANDO ESTILO) */
+/* INPUTS E BOTÕES ROXOS */
 .dt-input, .dt-select {
-    width: 100%; padding: 15px; border-radius: 12px; margin-bottom: 10px;
-    background: #000 !important; border: 1px solid #444 !important; color: #fff !important;
-    outline: none; appearance: none; -webkit-appearance: none;
+    width: 100% !important;
+    background: #1a0a2e !important;
+    border: 1px solid #8a2be2 !important;
+    color: white !important;
+    padding: 15px !important;
+    border-radius: 12px !important;
+    margin-bottom: 10px !important;
+    display: block !important;
 }
 
 .dt-btn-gerar {
-    width: 100%; padding: 16px; border-radius: 12px; border: none;
+    width: 100% !important;
     background: linear-gradient(90deg, #8a2be2, #a066ff) !important;
-    color: #fff !important; font-weight: bold; cursor: pointer;
+    color: white !important;
+    border: none !important;
+    padding: 16px !important;
+    border-radius: 12px !important;
+    font-weight: bold !important;
 }
 
-/* CHAT E TEXTOS IA */
-.dt-chat-box { display: flex; flex-direction: column; gap: 15px; padding-bottom: 100px; }
-.dt-bolha { padding: 15px; border-radius: 18px; max-width: 90%; line-height: 1.5; font-size: 15px; }
-.dt-bolha.ia { background: rgba(255,255,255,0.05); align-self: flex-start; border: 1px solid rgba(138,43,226,0.2); }
-.dt-bolha.user { background: #8a2be2; align-self: flex-end; }
+/* CHAT FORMATADO */
+.dt-bolha {
+    padding: 15px !important;
+    border-radius: 15px !important;
+    margin-bottom: 10px !important;
+    line-height: 1.6 !important; /* Espaçamento para não cansar a vista */
+    max-width: 85% !important;
+}
 
-/* Formatação de texto da IA */
-.dt-bolha.ia b { color: #a066ff; display: block; margin-top: 10px; }
+.dt-bolha.ia { 
+    background: rgba(255, 255, 255, 0.05) !important; 
+    border-left: 4px solid #8a2be2 !important;
+}
 
-/* MODAL DE AVISO (ESCONDIDO POR PADRÃO) */
+/* ESCONDER O MODAL/OK POR PADRÃO */
 .dt-modal {
-    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.9); z-index: 9999; align-items: center; justify-content: center; padding: 20px;
-}
-
-.dt-chat-input-fix {
-    position: fixed; bottom: 20px; left: 15px; right: 15px;
-    background: #150a25; border: 1px solid #8a2be2; border-radius: 30px;
-    display: flex; align-items: center; padding: 5px 5px 5px 15px;
+    display: none; /* Só aparece via JS */
+    position: fixed !important;
+    top: 0 !important; left: 0 !important;
+    width: 100% !important; height: 100% !important;
+    background: rgba(0,0,0,0.9) !important;
+    z-index: 9999 !important;
+    align-items: center !important;
+    justify-content: center !important;
 }
