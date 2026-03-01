@@ -1,13 +1,65 @@
-let materias = JSON.parse(localStorage.getItem('materias')) || [];
-let idParaExcluir = null;
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-function toggleMenu() {
-    document.getElementById('menu-lateral').classList.toggle('open');
-    document.getElementById('overlay').classList.toggle('active');
+const firebaseConfig = {
+  apiKey: "AIzaSyBh3wsAGXY-03HtT47TFlAZGWrusNtjTrc",
+  authDomain: "dt-scho0l.firebaseapp.com",
+  projectId: "dt-scho0l",
+  storageBucket: "dt-scho0l.firebasestorage.app",
+  messagingSenderId: "78578509391",
+  appId: "1:78578509391:web:7f5ede4f967ca8ce292c3a",
+  measurementId: "G-F7TG23TBTL"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const userPhone = localStorage.getItem('dt_user_phone');
+const userType = localStorage.getItem('dt_user_type');
+
+let materias = [];
+let idParaExcluir = null; // Restaurado
+
+// INICIALIZAÇÃO
+document.addEventListener('DOMContentLoaded', async () => {
+    await carregarDados();
+    lucide.createIcons();
+});
+
+async function carregarDados() {
+    if (userType === 'local' || !userPhone) {
+        materias = JSON.parse(localStorage.getItem('materias')) || [];
+    } else {
+        try {
+            const docRef = doc(db, "notas", userPhone);
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                materias = docSnap.data().materias || [];
+            } else {
+                materias = JSON.parse(localStorage.getItem('materias')) || [];
+                if(materias.length > 0) await salvarNaNuvem();
+            }
+        } catch (e) { console.error("Erro ao carregar:", e); }
+    }
+    atualizarLista();
 }
 
-function navegar(p) {
-    toggleMenu();
+async function salvarNaNuvem() {
+    if (userType !== 'local' && userPhone) {
+        try {
+            await setDoc(doc(db, "notas", userPhone), { materias: materias });
+        } catch (e) { console.error("Erro ao salvar:", e); }
+    }
+}
+
+// --- SUAS FUNÇÕES ORIGINAIS (100% PRESERVADAS) ---
+
+window.toggleMenu = function() {
+    document.getElementById('menu-lateral').classList.toggle('open');
+    document.getElementById('overlay').classList.toggle('active');
+};
+
+window.navegar = function(p) {
+    window.toggleMenu();
     if(p === 'notas') return;
     const msg = p === 'agenda' ? 'Em breve poderás marcar teus testes aqui!' : 'Em breve verás quem é o melhor da DT School!';
     document.getElementById('aviso-titulo').innerText = p.charAt(0).toUpperCase() + p.slice(1);
@@ -15,26 +67,30 @@ function navegar(p) {
     document.getElementById('aviso-icon').innerHTML = `<i data-lucide="${p === 'agenda' ? 'calendar' : 'trophy'}" style="width:45px; height:45px; color:#8a2be2;"></i>`;
     document.getElementById('modal-aviso-container').style.display = 'flex';
     lucide.createIcons();
-}
+};
 
-function fecharAviso() { document.getElementById('modal-aviso-container').style.display = 'none'; }
+window.fecharAviso = function() { document.getElementById('modal-aviso-container').style.display = 'none'; };
 
-function abrirModalExcluir(id) {
+// VOLTOU O SEU MODAL DE EXCLUSÃO ORIGINAL
+window.abrirModalExcluir = function(id) {
     idParaExcluir = id;
     document.getElementById('modal-excluir-container').style.display = 'flex';
     lucide.createIcons();
-}
+};
 
-function fecharModalExcluir() { document.getElementById('modal-excluir-container').style.display = 'none'; }
+window.fecharModalExcluir = function() { 
+    document.getElementById('modal-excluir-container').style.display = 'none'; 
+};
 
-function confirmarExclusao() {
+window.confirmarExclusao = function() {
     materias = materias.filter(m => m.id !== idParaExcluir);
     localStorage.setItem('materias', JSON.stringify(materias));
+    salvarNaNuvem(); // Sincroniza com a nuvem
     atualizarLista();
     fecharModalExcluir();
-}
+};
 
-function atualizarLista() {
+window.atualizarLista = function() {
     const lista = document.getElementById('lista-materias');
     if(!lista) return;
 
@@ -75,24 +131,27 @@ function atualizarLista() {
     document.getElementById('media-geral').innerText = total > 0 ? (somaMedias / total).toFixed(1) : "0.0";
     document.getElementById('aprov-count').innerText = `${materias.filter(m => (Number(m.n1)+Number(m.n2)+Number(m.n3)+Number(m.n4)) >= 24).length}/${total}`;
     lucide.createIcons();
-}
+};
 
-function salvarNota(id, b, val) {
+window.salvarNota = function(id, b, val) {
     const i = materias.findIndex(m => m.id === id);
-    materias[i]['n'+b] = parseFloat(val) || 0;
-    localStorage.setItem('materias', JSON.stringify(materias));
-    atualizarLista();
-}
+    if(i !== -1) {
+        materias[i]['n'+b] = parseFloat(val) || 0;
+        localStorage.setItem('materias', JSON.stringify(materias));
+        salvarNaNuvem();
+        atualizarLista();
+    }
+};
 
-function abrirModal() { document.getElementById('modal-materia').style.display = 'flex'; }
-function fecharModal() { document.getElementById('modal-materia').style.display = 'none'; }
+window.abrirModal = function() { document.getElementById('modal-materia').style.display = 'flex'; };
+window.fecharModal = function() { document.getElementById('modal-materia').style.display = 'none'; };
 
-function confirmarNovaMateria() {
+window.confirmarNovaMateria = function() {
     const input = document.getElementById('nome-materia-input');
     if(input.value) {
         materias.push({ id: Date.now(), nome: input.value, n1:0, n2:0, n3:0, n4:0 });
         localStorage.setItem('materias', JSON.stringify(materias));
+        salvarNaNuvem();
         input.value = ''; fecharModal(); atualizarLista();
     }
-}
-document.addEventListener('DOMContentLoaded', atualizarLista);
+};
