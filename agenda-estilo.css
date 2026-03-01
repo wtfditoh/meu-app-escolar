@@ -1,0 +1,83 @@
+/* Estilo específico para a Agenda DT School */
+
+/* Container de preview de imagem */
+#preview-container img {
+    max-height: 200px;
+    object-fit: cover;
+    border: 2px solid var(--primary);
+    box-shadow: 0 4px 15px rgba(138, 43, 226, 0.3);
+}
+
+/* Itens da Lista de Agenda */
+.tarefa-item {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 15px;
+    border-radius: 20px;
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: transform 0.2s;
+}
+
+.tarefa-item:active {
+    transform: scale(0.98);
+}
+
+/* Informações do texto */
+.tarefa-info b {
+    color: #fff;
+    font-size: 16px;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.tarefa-info span {
+    color: #aaa;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Badge de Matéria */
+.badge-materia {
+    background: var(--primary);
+    color: white;
+    font-size: 10px;
+    font-weight: bold;
+    padding: 4px 10px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    width: fit-content;
+}
+
+/* Botão de Deletar */
+.btn-delete {
+    background: rgba(255, 68, 68, 0.15);
+    color: #ff4444;
+    border: 1px solid rgba(255, 68, 68, 0.3);
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+/* Estilo para as imagens anexadas na lista */
+.img-anexo {
+    width: 100%;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: 5px;
+}
+
+/* Inputs da Agenda */
+.input-ia[type="date"] {
+    color-scheme: dark; /* Faz o calendário do sistema ficar escuro */
+}
