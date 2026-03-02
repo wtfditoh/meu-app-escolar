@@ -2,27 +2,74 @@
 <html lang="pt-br">
 <head>
     <script>
-    // Verifica se existe um número ou "visitante" salvo
     if (!localStorage.getItem('dt_user_phone')) {
-        // Se não tiver nada, manda para o login automaticamente
         window.location.href = 'login.html';
     }
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DT Educator</title>
+    <title>Hub Brain - IA</title>
     <link rel="stylesheet" href="ia-estilo.css">
     <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Estilo para manter o padrão Hub Brain no topo da IA */
+        .dt-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 15px;
+            height: 70px;
+            background: rgba(10, 10, 10, 0.9) !important;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(138, 43, 226, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .hub-logo-ia {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 900;
+            letter-spacing: 1px;
+            font-size: 18px;
+        }
+
+        .hub-symbol-mini {
+            background: rgba(138, 43, 226, 0.1);
+            padding: 5px;
+            border-radius: 8px;
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            display: flex;
+        }
+
+        .dt-menu-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 10px;
+        }
+    </style>
 </head>
-<body style="background: #05020a !important;">
+<body style="background: #05020a !important; margin: 0;">
 
     <header class="dt-header">
-        <button class="dt-menu-btn" onclick="abrirSeuMenuLateral()">
-            <i data-lucide="menu"></i>
+        <button class="dt-menu-btn" onclick="window.location.href='index.html'">
+            <i data-lucide="arrow-left"></i>
         </button>
-        <div class="dt-logo" id="header-titulo">Simulado IA</div>
-        <button class="dt-btn-lixeira" onclick="abrirModalLixeira()">
-            <i data-lucide="trash-2"></i>
+
+        <div class="hub-logo-ia">
+            <span>HUB</span>
+            <div class="hub-symbol-mini">
+                <i data-lucide="brain-circuit" style="color: #8a2be2; width: 18px; height: 18px;"></i>
+            </div>
+            <span style="color: #8a2be2;">BRAIN</span>
+        </div>
+
+        <button class="dt-btn-lixeira" onclick="abrirModalLixeira()" style="background:none; border:none; color:#666;">
+            <i data-lucide="trash-2" style="width: 20px;"></i>
         </button>
     </header>
 
@@ -35,7 +82,7 @@
         <section id="painel-simulado" class="dt-aba active">
             <div class="dt-card-form">
                 <input type="text" id="campo-tema" placeholder="Tema do simulado..." class="dt-input">
-                <button class="dt-btn-gerar" onclick="gerarSimulado()">GERAR QUESTÕES</button>
+                <button class="dt-btn-gerar" onclick="gerarSimulado()" style="background:#8a2be2; font-weight:800;">GERAR QUESTÕES</button>
             </div>
             <div id="container-questoes"></div>
         </section>
@@ -44,7 +91,7 @@
             <div id="chat-box" class="dt-chat-scroll"></div>
             <div class="dt-chat-input-area">
                 <input type="text" id="chat-input" placeholder="Sua dúvida...">
-                <button onclick="enviarMensagem()" class="dt-btn-send"><i data-lucide="send"></i></button>
+                <button onclick="enviarMensagem()" class="dt-btn-send" style="background:#8a2be2;"><i data-lucide="send"></i></button>
             </div>
         </section>
     </main>
@@ -67,5 +114,9 @@
     </div>
 
     <script src="ia-logica.js"></script>
+    <script>
+        // Importante para carregar os novos ícones (setinha e cérebro)
+        lucide.createIcons();
+    </script>
 </body>
 </html>
