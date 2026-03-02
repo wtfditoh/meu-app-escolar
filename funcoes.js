@@ -61,7 +61,7 @@ window.toggleMenu = function() {
 window.navegar = function(p) {
     window.toggleMenu();
     if(p === 'notas') return;
-    const msg = p === 'agenda' ? 'Em breve poderás marcar teus testes aqui!' : 'Em breve verás quem é o melhor da DT School!';
+    const msg = p === 'agenda' ? 'Em breve poderás marcar teus testes aqui!' : 'Em breve verás quem é o melhor da HUB BRAIN!';
     document.getElementById('aviso-titulo').innerText = p.charAt(0).toUpperCase() + p.slice(1);
     document.getElementById('aviso-texto').innerText = msg;
     document.getElementById('aviso-icon').innerHTML = `<i data-lucide="${p === 'agenda' ? 'calendar' : 'trophy'}" style="width:45px; height:45px; color:#8a2be2;"></i>`;
