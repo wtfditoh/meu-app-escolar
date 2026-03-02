@@ -1,3 +1,5 @@
+// --- COPIE A PARTIR DAQUI ---
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
@@ -17,9 +19,8 @@ const userPhone = localStorage.getItem('dt_user_phone');
 const userType = localStorage.getItem('dt_user_type');
 
 let materias = [];
-let idParaExcluir = null; // Restaurado
+let idParaExcluir = null;
 
-// INICIALIZAÇÃO
 document.addEventListener('DOMContentLoaded', async () => {
     await carregarDados();
     lucide.createIcons();
@@ -51,8 +52,6 @@ async function salvarNaNuvem() {
     }
 }
 
-// --- SUAS FUNÇÕES ORIGINAIS (100% PRESERVADAS) ---
-
 window.toggleMenu = function() {
     document.getElementById('menu-lateral').classList.toggle('open');
     document.getElementById('overlay').classList.toggle('active');
@@ -71,7 +70,6 @@ window.navegar = function(p) {
 
 window.fecharAviso = function() { document.getElementById('modal-aviso-container').style.display = 'none'; };
 
-// VOLTOU O SEU MODAL DE EXCLUSÃO ORIGINAL
 window.abrirModalExcluir = function(id) {
     idParaExcluir = id;
     document.getElementById('modal-excluir-container').style.display = 'flex';
@@ -85,7 +83,7 @@ window.fecharModalExcluir = function() {
 window.confirmarExclusao = function() {
     materias = materias.filter(m => m.id !== idParaExcluir);
     localStorage.setItem('materias', JSON.stringify(materias));
-    salvarNaNuvem(); // Sincroniza com a nuvem
+    salvarNaNuvem();
     atualizarLista();
     fecharModalExcluir();
 };
@@ -93,6 +91,14 @@ window.confirmarExclusao = function() {
 window.atualizarLista = function() {
     const lista = document.getElementById('lista-materias');
     if(!lista) return;
+
+    // --- MÁGICA DA ORDENAÇÃO (ADICIONADO AQUI) ---
+    // Ordena pela soma das notas (da maior para a menor)
+    materias.sort((a, b) => {
+        const somaA = (Number(a.n1)||0) + (Number(a.n2)||0) + (Number(a.n3)||0) + (Number(a.n4)||0);
+        const somaB = (Number(b.n1)||0) + (Number(b.n2)||0) + (Number(b.n3)||0) + (Number(b.n4)||0);
+        return somaB - somaA;
+    });
 
     lista.innerHTML = materias.map(m => {
         const soma = (Number(m.n1)||0) + (Number(m.n2)||0) + (Number(m.n3)||0) + (Number(m.n4)||0);
