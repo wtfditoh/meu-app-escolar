@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Login - DT School</title>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="stylesheet" href="estilo.css"> <style>
+    <title>Hub Brain - Login</title> <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="estilo.css"> 
+    <style>
         :root {
             --primary: #8a2be2;
             --bg: #0a0a0a;
@@ -35,13 +35,41 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        .logo-area i {
-            color: var(--primary);
-            margin-bottom: 15px;
+        /* NOVO ESTILO DA LOGO PULSANTE */
+        .hub-symbol {
+            background: rgba(138, 43, 226, 0.1);
+            width: 65px;
+            height: 65px;
+            border-radius: 20px;
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            animation: pulse-glow-login 3s infinite ease-in-out;
         }
 
-        h2 { margin-bottom: 10px; font-weight: 800; }
-        p { color: #888; font-size: 14px; margin-bottom: 30px; }
+        @keyframes pulse-glow-login {
+            0% { box-shadow: 0 0 0px rgba(138, 43, 226, 0); transform: scale(1); }
+            50% { box-shadow: 0 0 20px rgba(138, 43, 226, 0.4); transform: scale(1.05); }
+            100% { box-shadow: 0 0 0px rgba(138, 43, 226, 0); transform: scale(1); }
+        }
+
+        .logo-area h2 { 
+            margin: 0; 
+            font-weight: 900; 
+            font-size: 26px; 
+            letter-spacing: -1px; 
+            text-transform: uppercase;
+        }
+        
+        .logo-area p { 
+            color: #666; 
+            font-size: 12px; 
+            margin: 8px 0 30px; 
+            letter-spacing: 1px;
+            font-weight: bold;
+        }
 
         .input-group {
             position: relative;
@@ -75,13 +103,14 @@
             padding: 15px;
             border-radius: 12px;
             font-size: 16px;
-            font-weight: bold;
+            font-weight: 800;
             cursor: pointer;
             transition: 0.3s;
             display: flex;
             justify-content: center;
             align-items: center;
             gap: 10px;
+            box-shadow: 0 4px 15px rgba(138, 43, 226, 0.3);
         }
 
         .btn-acessar:active { transform: scale(0.98); }
@@ -90,7 +119,7 @@
             margin-top: 15px;
             background: none;
             border: none;
-            color: #666;
+            color: #444;
             font-size: 13px;
             cursor: pointer;
             text-decoration: underline;
@@ -109,10 +138,12 @@
 
     <div class="login-card">
         <div class="logo-area">
-            <i data-lucide="shield-check" style="width: 50px; height: 50px;"></i>
+            <div class="hub-symbol">
+                <i data-lucide="brain-circuit" style="width: 35px; height: 35px; color: var(--primary);"></i>
+            </div>
+            <h2>HUB <span style="color: var(--primary);">BRAIN</span></h2>
+            <p>CENTRAL DE INTELIGÊNCIA ESCOLAR</p>
         </div>
-        <h2>DT School</h2>
-        <p>Sincronize suas notas e agenda</p>
 
         <div class="input-group">
             <input type="tel" id="login-phone" placeholder="(00) 00000-0000" maxlength="15" class="input-ia">
