@@ -8,21 +8,87 @@
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Agenda DT School</title>
+    <title>Hub Brain - Agenda</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="stylesheet" href="estilo.css?v=12.0">
     <link rel="stylesheet" href="agenda-estilo.css">
+    <style>
+        /* Ajuste para o topo Hub Brain na Agenda */
+        .glass-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 15px;
+            height: 70px;
+            background: rgba(10, 10, 10, 0.8) !important;
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(138, 43, 226, 0.2);
+        }
+
+        .hub-logo-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .hub-logo-text {
+            font-weight: 900;
+            font-size: 18px;
+            letter-spacing: 1px;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        .hub-logo-text.purple {
+            color: #8a2be2;
+        }
+
+        .hub-symbol-mini {
+            background: rgba(138, 43, 226, 0.1);
+            padding: 5px;
+            border-radius: 8px;
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            display: flex;
+        }
+
+        /* Estilo para o mês que fica logo abaixo do topo */
+        .mes-indicador {
+            text-align: center;
+            padding: 20px 0 10px;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 3px;
+            color: #666;
+            text-transform: uppercase;
+        }
+
+        /* Deixar o FAB (botão +) no padrão roxo */
+        .fab-button {
+            background: #8a2be2 !important;
+            box-shadow: 0 4px 20px rgba(138, 43, 226, 0.4) !important;
+        }
+    </style>
 </head>
 <body class="bg-dark">
     <header class="glass-header">
         <button onclick="window.location.href='index.html'" class="btn-icon">
             <i data-lucide="arrow-left"></i>
         </button>
-        <h1 id="mes-topo" class="topo-compacto">Agenda</h1>
+        
+        <div class="hub-logo-container">
+            <span class="hub-logo-text">Hub</span>
+            <div class="hub-symbol-mini">
+                <i data-lucide="brain-circuit" style="color: #8a2be2; width: 18px; height: 18px;"></i>
+            </div>
+            <span class="hub-logo-text purple">Brain</span>
+        </div>
+
         <div style="width: 38px;"></div>
     </header>
 
     <main class="container-agenda">
+        <div class="mes-indicador" id="mes-topo">AGENDA</div>
+
         <div class="calendar-card">
             <div class="calendar-nav">
                 <button onclick="mudarMes(-1)" class="btn-nav-clean"><i data-lucide="chevron-left"></i></button>
@@ -33,7 +99,8 @@
 
         <div class="agenda-section">
             <h3 class="section-title" id="titulo-lista">Compromissos</h3>
-            <div id="lista-agenda"></div> </div>
+            <div id="lista-agenda"></div> 
+        </div>
     </main>
 
     <button class="fab-button" onclick="abrirModalAgendaHoje()">
@@ -42,7 +109,7 @@
 
     <div id="modal-agenda" class="modal">
         <div class="modal-content glass">
-            <h3 style="color: var(--primary); margin-bottom: 20px;">Nova Atividade</h3>
+            <h3 style="color: #8a2be2; margin-bottom: 20px;">Nova Atividade</h3>
             <input type="text" id="tarefa-nome" placeholder="Título" class="input-ia">
             <textarea id="tarefa-desc" placeholder="Detalhes" class="input-ia" style="height: 80px; resize: none;"></textarea>
             
@@ -52,7 +119,7 @@
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                 <div>
-                    <label style="font-size: 10px; color: var(--primary);">INÍCIO</label>
+                    <label style="font-size: 10px; color: #8a2be2;">INÍCIO</label>
                     <input type="date" id="tarefa-data-inicio" class="input-ia">
                 </div>
                 <div>
@@ -69,7 +136,7 @@
 
             <div class="area-botoes-modal">
                 <button onclick="fecharModalAgenda()" class="btn-modal-voltar">Sair</button>
-                <button id="btn-salvar-agenda" onclick="adicionarTarefa()" class="btn-modal-acao" type="button">Agendar</button>
+                <button id="btn-salvar-agenda" onclick="adicionarTarefa()" class="btn-modal-acao" type="button" style="background: #8a2be2;">Agendar</button>
             </div>
         </div>
     </div>
