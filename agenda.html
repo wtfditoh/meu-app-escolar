@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="estilo.css?v=12.0">
     <link rel="stylesheet" href="agenda-estilo.css">
     <style>
-        /* Ajuste para o topo Hub Brain na Agenda */
+        /* Topo Padrão Hub Brain */
         .glass-header {
             display: flex;
             align-items: center;
@@ -23,49 +23,47 @@
             background: rgba(10, 10, 10, 0.8) !important;
             backdrop-filter: blur(15px);
             border-bottom: 1px solid rgba(138, 43, 226, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
 
-        .hub-logo-container {
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        .hub-logo-container { display: flex; align-items: center; gap: 8px; }
+        .hub-logo-text { font-weight: 900; font-size: 18px; letter-spacing: 1px; color: white; text-transform: uppercase; }
+        .hub-logo-text.purple { color: #8a2be2; }
+        .hub-symbol-mini { 
+            background: rgba(138, 43, 226, 0.1); 
+            padding: 5px; 
+            border-radius: 8px; 
+            border: 1px solid rgba(138, 43, 226, 0.3); 
+            display: flex; 
         }
 
-        .hub-logo-text {
-            font-weight: 900;
-            font-size: 18px;
-            letter-spacing: 1px;
-            color: white;
-            text-transform: uppercase;
+        .mes-indicador { 
+            text-align: center; 
+            padding: 20px 0 10px; 
+            font-size: 12px; 
+            font-weight: 800; 
+            letter-spacing: 3px; 
+            color: #666; 
+            text-transform: uppercase; 
         }
 
-        .hub-logo-text.purple {
-            color: #8a2be2;
+        .fab-button { 
+            background: #8a2be2 !important; 
+            box-shadow: 0 4px 20px rgba(138, 43, 226, 0.4) !important; 
         }
 
-        .hub-symbol-mini {
-            background: rgba(138, 43, 226, 0.1);
-            padding: 5px;
-            border-radius: 8px;
-            border: 1px solid rgba(138, 43, 226, 0.3);
-            display: flex;
+        /* Estilo para o input quando houver erro */
+        .input-erro {
+            border: 1px solid #ff4444 !important;
+            animation: shake 0.3s;
         }
 
-        /* Estilo para o mês que fica logo abaixo do topo */
-        .mes-indicador {
-            text-align: center;
-            padding: 20px 0 10px;
-            font-size: 12px;
-            font-weight: 800;
-            letter-spacing: 3px;
-            color: #666;
-            text-transform: uppercase;
-        }
-
-        /* Deixar o FAB (botão +) no padrão roxo */
-        .fab-button {
-            background: #8a2be2 !important;
-            box-shadow: 0 4px 20px rgba(138, 43, 226, 0.4) !important;
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
         }
     </style>
 </head>
@@ -87,7 +85,7 @@
     </header>
 
     <main class="container-agenda">
-        <div class="mes-indicador" id="mes-topo">AGENDA</div>
+        <div class="mes-indicador" id="mes-topo">CARREGANDO...</div>
 
         <div class="calendar-card">
             <div class="calendar-nav">
@@ -136,12 +134,82 @@
 
             <div class="area-botoes-modal">
                 <button onclick="fecharModalAgenda()" class="btn-modal-voltar">Sair</button>
-                <button id="btn-salvar-agenda" onclick="adicionarTarefa()" class="btn-modal-acao" type="button" style="background: #8a2be2;">Agendar</button>
+                <button id="btn-salvar-agenda" onclick="validarEAdicionar()" class="btn-modal-acao" type="button" style="background: #8a2be2; transition: 0.3s;">
+                    Agendar
+                </button>
             </div>
         </div>
     </div>
 
     <script type="module" src="agenda-logica.js"></script>
-    <script>lucide.createIcons();</script>
+    
+    <script>
+        // 1. VALIDAÇÃO INTELIGENTE (ADEUS AVISO DO CHROME)
+        function validarEAdicionar() {
+            const nomeInput = document.getElementById('tarefa-nome');
+            const btn = document.getElementById('btn-salvar-agenda');
+            const textoOriginal = "Agendar";
+
+            if (!nomeInput.value.trim()) {
+                // Efeito visual de erro
+                btn.style.background = "#ff4444";
+                btn.innerText = "Preencha o título!";
+                nomeInput.classList.add('input-erro');
+
+                // Volta ao normal após 2 segundos
+                setTimeout(() => {
+                    btn.style.background = "#8a2be2";
+                    btn.innerText = textoOriginal;
+                    nomeInput.classList.remove('input-erro');
+                }, 2000);
+                
+                return; // Bloqueia o envio
+            }
+
+            // Se estiver ok, chama a função do arquivo externo
+            if (typeof adicionarTarefa === "function") {
+                adicionarTarefa();
+            }
+        }
+
+        // 2. CORREÇÃO DE DATA (PARA MARCAR DIA 1 E NÃO DIA 2)
+        function ajustarInterface() {
+            const hojeBR = new Date().toLocaleDateString('pt-BR', {day: '2-digit'});
+            
+            setTimeout(() => {
+                // Corrige o quadradinho no calendário
+                const todosOsDias = document.querySelectorAll('.calendar-day, .day, div[data-day]');
+                todosOsDias.forEach(quadrado => {
+                    quadrado.classList.remove('today', 'active', 'current');
+                    quadrado.style.border = "none";
+                    quadrado.style.background = "none";
+                    quadrado.style.color = "";
+
+                    if (quadrado.innerText.trim().padStart(2, '0') === hojeBR) {
+                        quadrado.style.border = "1px solid #8a2be2";
+                        quadrado.style.background = "rgba(138, 43, 226, 0.2)";
+                        quadrado.style.color = "#8a2be2";
+                        quadrado.style.fontWeight = "bold";
+                        quadrado.style.borderRadius = "8px";
+                    }
+                });
+
+                // Atualiza o texto do mês no topo
+                const dataFormatada = new Date().toLocaleDateString('pt-BR', {month: 'long', year: 'numeric'});
+                const elementoMes = document.getElementById('mes-topo');
+                if(elementoMes) elementoMes.innerText = dataFormatada.toUpperCase();
+                
+                lucide.createIcons();
+            }, 400);
+        }
+
+        // Eventos de carregamento
+        window.addEventListener('load', ajustarInterface);
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('.btn-nav-clean')) {
+                setTimeout(ajustarInterface, 200);
+            }
+        });
+    </script>
 </body>
 </html>
