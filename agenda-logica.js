@@ -21,12 +21,17 @@ let dataSelecionada = "";
 let imagemBase64 = "";
 let agendaGlobal = [];
 
+// FUNÇÃO AUXILIAR: Pega "hoje" no formato YYYY-MM-DD sem erro de fuso
+const getHojeLocal = () => {
+    const d = new Date();
+    return new Date(d.getTime() - (d.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+};
+
 document.addEventListener('DOMContentLoaded', () => {
     window.carregarMateriasNoSelect();
     window.buscarDadosNuvem();
 });
 
-// --- BUSCA DADOS ---
 window.buscarDadosNuvem = async function() {
     if (userType === 'local') {
         agendaGlobal = JSON.parse(localStorage.getItem('dt_agenda') || '[]');
@@ -42,14 +47,13 @@ window.buscarDadosNuvem = async function() {
     window.carregarTarefas(dataSelecionada);
 };
 
-// --- RENDERIZAR LISTA COM CORES E PRAZOS ---
 window.carregarTarefas = (filtroData = null) => {
     const lista = document.getElementById('lista-agenda');
     const titulo = document.getElementById('titulo-lista');
     if(!lista) return;
 
     let tarefas = [...agendaGlobal];
-    const hojeStr = new Date().toISOString().split('T')[0];
+    const hojeStr = getHojeLocal(); // CORRIGIDO AQUI
     
     if (filtroData && filtroData !== "") {
         tarefas = tarefas.filter(t => filtroData >= t.dataInicio && filtroData <= t.dataFim);
@@ -87,7 +91,7 @@ window.carregarTarefas = (filtroData = null) => {
         <div class="tarefa-item" style="border-left: 5px solid ${corStatus}; opacity: ${t.concluida ? '0.6' : '1'}; margin-bottom:15px; background:rgba(255,255,255,0.05); padding:15px; border-radius:15px;">
             <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                 <div style="flex: 1;"> 
-                    <span style="background:var(--primary); font-size:10px; padding:3px 8px; border-radius:5px; font-weight:bold; color:white;">${t.materia}</span>
+                    <span style="background:#8a2be2; font-size:10px; padding:3px 8px; border-radius:5px; font-weight:bold; color:white;">${t.materia}</span>
                     <b onclick="alternarConcluida('${t.id_firebase}', ${t.criadoEm})" style="display:block; margin-top:8px; font-size:18px; color:white; text-decoration: ${t.concluida ? 'line-through' : 'none'}; cursor:pointer;">
                         ${t.nome}
                     </b>
@@ -96,7 +100,7 @@ window.carregarTarefas = (filtroData = null) => {
                     <div style="margin-top:5px; color:${corStatus}; font-weight:bold; font-size:12px;">${textoStatus}</div>
                 </div>
                 <div style="display:flex; gap:8px;">
-                    <button onclick="alternarConcluida('${t.id_firebase}', ${t.criadoEm})" style="background:rgba(0,210,255,0.1); border:none; color:#00d2ff; padding:8px; border-radius:10px; cursor:pointer;">
+                    <button onclick="alternarConcluida('${t.id_firebase}', ${t.criadoEm})" style="background:rgba(138,43,226,0.1); border:none; color:#8a2be2; padding:8px; border-radius:10px; cursor:pointer;">
                         <i data-lucide="${t.concluida ? 'rotate-ccw' : 'check-circle'}" style="width:18px;"></i>
                     </button>
                     <button onclick="removerTarefa('${t.id_firebase}', ${t.criadoEm})" style="background:rgba(255,68,68,0.1); border:none; color:#ff4444; padding:8px; border-radius:10px; cursor:pointer;">
@@ -110,7 +114,43 @@ window.carregarTarefas = (filtroData = null) => {
     lucide.createIcons();
 };
 
-// --- ADICIONAR TAREFA ---
+window.renderizarCalendario = function() {
+    const grid = document.getElementById('calendar-grid');
+    const topoMes = document.getElementById('mes-topo');
+    if(!grid || !topoMes) return;
+    grid.innerHTML = "";
+    const nomesDias = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
+    nomesDias.forEach(d => grid.innerHTML += `<div class="dia-semana">${d}</div>`);
+
+    const ano = mesExibido.getFullYear();
+    const mes = mesExibido.getMonth();
+    topoMes.innerText = new Intl.DateTimeFormat('pt-BR', { month: 'long', year: 'numeric' }).format(mesExibido);
+
+    const primeiroDiaMes = new Date(ano, mes, 1).getDay();
+    const diasNoMes = new Date(ano, mes + 1, 0).getDate();
+
+    for (let i = 0; i < primeiroDiaMes; i++) grid.innerHTML += `<div></div>`;
+
+    const hojeLocal = getHojeLocal(); // CORRIGIDO AQUI PARA O CALENDÁRIO
+
+    for (let dia = 1; dia <= diasNoMes; dia++) {
+        const dataStr = `${ano}-${String(mes + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
+        const temTarefa = agendaGlobal.some(t => dataStr >= t.dataInicio && dataStr <= t.dataFim);
+        
+        // COMPARAÇÃO CORRIGIDA
+        const hojeClass = hojeLocal === dataStr ? 'hoje' : '';
+        const selClass = dataSelecionada === dataStr ? 'selecionado' : '';
+        
+        grid.innerHTML += `
+            <div class="dia-numero ${hojeClass} ${selClass}" onclick="selecionarDia('${dataStr}')">
+                ${dia}
+                ${temTarefa ? '<div class="dot"></div>' : ''}
+            </div>`;
+    }
+    lucide.createIcons();
+};
+
+// --- RESTO DAS FUNÇÕES IGUAIS ---
 window.adicionarTarefa = async function() {
     const nome = document.getElementById('tarefa-nome').value.trim();
     const desc = document.getElementById('tarefa-desc').value.trim();
@@ -118,7 +158,7 @@ window.adicionarTarefa = async function() {
     const dataFim = document.getElementById('tarefa-data-fim').value;
     const materia = document.getElementById('tarefa-materia').value;
 
-    if (!nome || !dataInicio || !dataFim) return alert("Preencha os campos obrigatórios!");
+    if (!nome || !dataInicio || !dataFim) return; // Validação agora é feita no HTML
 
     const nova = { 
         nome, descricao: desc, dataInicio, dataFim, materia, 
@@ -137,7 +177,6 @@ window.adicionarTarefa = async function() {
     window.buscarDadosNuvem();
 };
 
-// --- REMOVER SEM AVISO ---
 window.removerTarefa = async function(idFirebase, idLocal) {
     if (userType === 'local') {
         agendaGlobal = agendaGlobal.filter(t => t.criadoEm !== idLocal);
@@ -148,7 +187,6 @@ window.removerTarefa = async function(idFirebase, idLocal) {
     window.buscarDadosNuvem();
 };
 
-// --- FECHAR E LIMPAR TUDO ---
 window.fecharModalAgenda = () => { 
     document.getElementById('modal-agenda').style.display = 'none'; 
     document.getElementById('tarefa-nome').value = ""; 
@@ -156,39 +194,6 @@ window.fecharModalAgenda = () => {
     document.getElementById('tarefa-materia').value = "Geral";
     document.getElementById('preview-container').innerHTML = "";
     imagemBase64 = ""; 
-};
-
-// --- RESTANTE DAS FUNÇÕES (CALENDÁRIO E APOIO) ---
-window.renderizarCalendario = function() {
-    const grid = document.getElementById('calendar-grid');
-    const topoMes = document.getElementById('mes-topo');
-    if(!grid || !topoMes) return;
-    grid.innerHTML = "";
-    const nomesDias = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
-    nomesDias.forEach(d => grid.innerHTML += `<div class="dia-semana">${d}</div>`);
-
-    const ano = mesExibido.getFullYear();
-    const mes = mesExibido.getMonth();
-    topoMes.innerText = new Intl.DateTimeFormat('pt-BR', { month: 'long', year: 'numeric' }).format(mesExibido);
-
-    const primeiroDiaMes = new Date(ano, mes, 1).getDay();
-    const diasNoMes = new Date(ano, mes + 1, 0).getDate();
-
-    for (let i = 0; i < primeiroDiaMes; i++) grid.innerHTML += `<div></div>`;
-
-    for (let dia = 1; dia <= diasNoMes; dia++) {
-        const dataStr = `${ano}-${String(mes + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
-        const temTarefa = agendaGlobal.some(t => dataStr >= t.dataInicio && dataStr <= t.dataFim);
-        const hoje = new Date().toISOString().split('T')[0] === dataStr ? 'hoje' : '';
-        const sel = dataSelecionada === dataStr ? 'selecionado' : '';
-        
-        grid.innerHTML += `
-            <div class="dia-numero ${hoje} ${sel}" onclick="selecionarDia('${dataStr}')">
-                ${dia}
-                ${temTarefa ? '<div class="dot"></div>' : ''}
-            </div>`;
-    }
-    lucide.createIcons();
 };
 
 window.alternarConcluida = async function(idFirebase, idLocal) {
@@ -233,7 +238,7 @@ window.carregarMateriasNoSelect = function() {
 window.selecionarDia = (d) => { dataSelecionada = (dataSelecionada === d) ? "" : d; window.renderizarCalendario(); window.carregarTarefas(dataSelecionada); };
 window.mudarMes = (v) => { mesExibido.setMonth(mesExibido.getMonth() + v); window.renderizarCalendario(); };
 window.abrirModalAgendaHoje = () => { 
-    const hoje = new Date().toISOString().split('T')[0];
+    const hoje = getHojeLocal();
     document.getElementById('tarefa-data-inicio').value = dataSelecionada || hoje;
     document.getElementById('tarefa-data-fim').value = dataSelecionada || hoje;
     document.getElementById('modal-agenda').style.display = 'flex'; 
